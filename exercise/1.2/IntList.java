@@ -6,14 +6,14 @@ public class IntList {
         first = f;
         rest = r;
     }
-
+/** Return the size of the list using... recursion! */
     public int size() {
         if (rest == null) {
             return 1;
         }
         return 1 + this.rest.size();
     }
-
+/** Return the size of the list using no recursion! */
     public int iterativeSize() {
         IntList p = this;
         int totalSize = 0;
@@ -23,12 +23,33 @@ public class IntList {
         }
         return totalSize;
     }
-
+/** Return ith item in intList */
     public int get(int i){
         if (i == 0){
           return this.first;
         }
         return this.rest.get(i-1);
+    }
+/** create a new intList with each element is added x */
+    public static IntList incrList(IntList L, int x){
+        IntList Cur = new IntList(L.first + x,null);
+        IntList Res = Cur;
+        while (L != null){
+            Cur.first = L.first + x;
+            Cur.rest = new IntList(L.first + x,null);
+            Cur = Cur.rest;
+            L = L.rest;
+        }
+        return Res;
+      }
+/** create a new intList with each element is added x with Recursion */
+    public static IntList incrListRecur(IntList L, int x){
+        if (L.rest == null){
+          return new IntList(L.first + x, null);
+        }
+        IntList Res = new IntList(L.first + x, null);
+        Res.rest = IntList.incrListRecur(L.rest, x);
+        return Res;
     }
 
     public static void main(String[] args) {
@@ -38,6 +59,11 @@ public class IntList {
         System.out.println(L.get(0));
         System.out.println(L.get(1));
         System.out.println(L.get(2));
+        System.out.println(incrList(L,5).get(0));
+        System.out.println(incrList(L,5).get(1));
+        System.out.println(incrList(L,5).get(2));
+        System.out.println(incrListRecur(L,5).get(0));
+        System.out.println(incrListRecur(L,5).get(1));
+        System.out.println(incrListRecur(L,5).get(2));
     }
-
 }
