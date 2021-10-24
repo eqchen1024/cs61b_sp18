@@ -51,7 +51,15 @@ public class IntList {
         Res.rest = IntList.incrListRecur(L.rest, x);
         return Res;
     }
-
+/** mutate the origin intLint to add x to each element*/
+    public static IntList incrListRecurMutate(IntList L, int x){
+        if (L == null){
+          return null;
+        }
+        L.first=L.first + x;
+        L.rest = IntList.incrListRecurMutate(L.rest, x);
+        return L;
+    }
     public static void main(String[] args) {
         IntList L = new IntList(15,null);
         L = new IntList(10,L);
@@ -65,5 +73,8 @@ public class IntList {
         System.out.println(incrListRecur(L,5).get(0));
         System.out.println(incrListRecur(L,5).get(1));
         System.out.println(incrListRecur(L,5).get(2));
+        System.out.println(incrListRecurMutate(L,6).get(0));
+        System.out.println(L.get(1));
+        System.out.println(L.get(2));
     }
 }
