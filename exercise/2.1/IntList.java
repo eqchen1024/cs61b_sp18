@@ -60,6 +60,12 @@ public class IntList {
         L.rest = IntList.incrListRecurMutate(L.rest, x);
         return L;
     }
+
+/** add First*/
+    public static IntList addFirst(int x, IntList L){
+        L = new IntList(x,L);
+        return L;
+    }
     public static void main(String[] args) {
         IntList L = new IntList(15,null);
         L = new IntList(10,L);
@@ -76,5 +82,10 @@ public class IntList {
         System.out.println(incrListRecurMutate(L,6).get(0));
         System.out.println(L.get(1));
         System.out.println(L.get(2));
+        L=addFirst(-100,L);
+        System.out.println(L.get(0));
+        System.out.println(L.get(1));
+        System.out.println(L.get(2));
+        System.out.println(L.get(3));
     }
 }
