@@ -19,8 +19,7 @@ public class NBody {
             double currXXVel= in.readDouble();
             double currYYVel= in.readDouble();
             double currMass= in.readDouble();
-            String path = "images/";
-            String gif = path + in.readString();
+            String gif = in.readString();
             Planet currPlanet = new Planet(currXXPos,currYYPos,
                     currXXVel,currYYVel,currMass,gif);
             StarArray[currNum]=currPlanet;
