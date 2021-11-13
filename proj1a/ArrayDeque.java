@@ -30,7 +30,7 @@ public class ArrayDeque<T> {
             resize();
         }
         items[nextFirst] = item;
-        if (nextLast != 0) {
+        if (nextFirst != 0) {
             nextFirst -= 1;
         } else {
             nextFirst -= 1;
@@ -66,13 +66,18 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for (int i = nextFirst + 1; i < length; i++){
-            System.out.print(String.valueOf(items[i]) + ' ');
+        if (nextFirst < nextLast - 1) {
+            for (int i = nextFirst + 1; i < nextLast; i++) {
+                System.out.print(String.valueOf(items[i]) + ' ');
+            }
+        } else {
+            for (int i = nextFirst + 1; i < length; i++) {
+                System.out.print(String.valueOf(items[i]) + ' ');
+            }
+            for (int i = 0; i < nextLast; i++) {
+                System.out.print(String.valueOf(items[i]) + ' ');
+            }
         }
-        for (int i = 0; i < nextLast; i++) {
-            System.out.print(String.valueOf(items[i]) + ' ');
-        }
-
     }
     public T removeLast() {
         if (size == 0) {
@@ -122,4 +127,18 @@ public class ArrayDeque<T> {
             return items[index + nextFirst + 1 - length];
         }
     }
-}
+    /**
+    public static void main(String[] args) {
+        ArrayDeque a = new ArrayDeque();
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.printDeque();
+    }
+}*/
