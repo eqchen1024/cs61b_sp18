@@ -17,7 +17,8 @@ public class ArrayDeque<T> {
         length = size * 4;
         T[] newArray = (T[]) new Object[length];
         System.arraycopy(items, 0, newArray, 0, nextLast);
-        System.arraycopy(items, nextFirst + 1, newArray,length - (size - nextFirst - 1), size - nextLast);
+        System.arraycopy(items, nextFirst + 1, newArray,
+                length - (size - nextFirst - 1), size - nextLast);
         items = newArray;
         nextFirst = length - (size - nextFirst - 1) - 1;
 
@@ -25,7 +26,7 @@ public class ArrayDeque<T> {
 
 
     public void addFirst(T item) {
-        if (nextFirst == nextLast - 1) {
+        if (size == length) {
             resize();
         }
         items[nextFirst] = item;
@@ -39,7 +40,7 @@ public class ArrayDeque<T> {
     }
 
     public void addLast(T item) {
-        if (nextFirst == nextLast - 1) {
+        if (size == length) {
             resize();
         }
         items[nextLast] = item;
@@ -65,7 +66,7 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for(int i = nextFirst + 1;i < length;i++){
+        for (int i = nextFirst + 1;i < length;i++){
             System.out.print(String.valueOf(items[i]) + ' ');
         }
         for (int i = 0; i < nextLast; i++){
