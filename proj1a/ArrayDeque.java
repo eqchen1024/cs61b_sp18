@@ -79,6 +79,7 @@ public class ArrayDeque<T> {
             }
         }
     }
+
     public T removeLast() {
         if (size == 0) {
             return null;
@@ -90,7 +91,7 @@ public class ArrayDeque<T> {
         } else {
             nextLast -= 1;
             nextLast += length;
-            toRemove = items[length -1];
+            toRemove = items[length - 1];
         }
         size -= 1;
         if (size / length < 0.25) {
@@ -99,6 +100,7 @@ public class ArrayDeque<T> {
         return toRemove;
 
     }
+
     public T removeFirst() {
         if (size == 0) {
             return null;
@@ -117,6 +119,7 @@ public class ArrayDeque<T> {
         }
         return toRemove;
     }
+
     public T get(int index) {
         if (index >= size) {
             return null;
@@ -127,6 +130,7 @@ public class ArrayDeque<T> {
             return items[index + nextFirst + 1 - length];
         }
     }
+}
     /**
     public static void main(String[] args) {
         ArrayDeque a = new ArrayDeque();
