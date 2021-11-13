@@ -13,21 +13,41 @@ public class ArrayDeque<T> {
         length = items.length;
     }
 
-    private void resize() {
+    private void resize_up() {
         length = size * 4;
         T[] newArray = (T[]) new Object[length];
+//        System.out.println(size);
+//        System.out.println(nextFirst);
+//        System.out.println(nextLast);
         System.arraycopy(items, 0, newArray, 0, nextLast);
         System.arraycopy(items, nextFirst + 1, newArray,
                 length - (size - nextFirst - 1), size - nextLast);
         items = newArray;
         nextFirst = length - (size - nextFirst - 1) - 1;
+//        System.out.println(nextFirst);
+//        System.out.println(nextLast);
 
+    }
+    private void resize_down() {
+        T[] newArray = (T[]) new Object[size];
+        if (nextLast > nextFirst) {
+            System.arraycopy(items, nextFirst + 1,
+                    newArray, 0, size);
+        } else {
+            System.arraycopy(items, nextFirst + 1, newArray, 0,length - nextFirst - 1);
+            System.arraycopy(items, 0, newArray,length - nextFirst - 1, nextLast);
+        }
+        items = newArray;
+        nextFirst = size -1;
+        nextLast = 0;
+        length = size;
+//        System.out.println(items);
     }
 
 
     public void addFirst(T item) {
         if (size == length) {
-            resize();
+            resize_up();
         }
         items[nextFirst] = item;
         if (nextFirst != 0) {
@@ -41,7 +61,7 @@ public class ArrayDeque<T> {
 
     public void addLast(T item) {
         if (size == length) {
-            resize();
+            resize_up();
         }
         items[nextLast] = item;
         if (nextLast != length - 1) {
@@ -95,7 +115,7 @@ public class ArrayDeque<T> {
         }
         size -= 1;
         if (size / length < 0.25) {
-            resize();
+            resize_down();
         }
         return toRemove;
 
@@ -114,8 +134,13 @@ public class ArrayDeque<T> {
             nextFirst = 0;
         }
         size -= 1;
-        if (size / length < 0.25) {
-            resize();
+        if ( length > 4 * size) {
+//            System.out.println(size);
+//            System.out.println(length);
+//            System.out.println("Downsize");
+            resize_down();
+//            System.out.println(length);
+//            System.out.println(size);
         }
         return toRemove;
     }
@@ -130,8 +155,7 @@ public class ArrayDeque<T> {
             return items[index + nextFirst + 1 - length];
         }
     }
-}
-    /**
+/**
     public static void main(String[] args) {
         ArrayDeque a = new ArrayDeque();
         a.addFirst("aa");
@@ -143,6 +167,33 @@ public class ArrayDeque<T> {
         a.addFirst("aa");
         a.addFirst("aa");
         a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.addFirst("aa");
+        a.removeFirst();
+        a.removeFirst();
+        a.removeFirst();
         a.printDeque();
-    }
-}*/
+    } */
+}
