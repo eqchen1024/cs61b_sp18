@@ -30,7 +30,7 @@ public class ArrayDeque<T> {
             resize();
         }
         items[nextFirst] = item;
-        if (nextLast != 0){
+        if (nextLast != 0) {
             nextFirst -= 1;
         } else {
             nextFirst -= 1;
@@ -44,7 +44,7 @@ public class ArrayDeque<T> {
             resize();
         }
         items[nextLast] = item;
-        if (nextLast != length - 1){
+        if (nextLast != length - 1) {
             nextLast += 1;
         } else {
             nextLast += 1;
@@ -54,7 +54,7 @@ public class ArrayDeque<T> {
     }
 
     public boolean isEmpty() {
-        if (size == 0){
+        if (size == 0) {
             return true;
         }
         return false;
@@ -66,47 +66,60 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for (int i = nextFirst + 1;i < length;i++){
+        for (int i = nextFirst + 1; i < length; i++){
             System.out.print(String.valueOf(items[i]) + ' ');
         }
-        for (int i = 0; i < nextLast; i++){
+        for (int i = 0; i < nextLast; i++) {
             System.out.print(String.valueOf(items[i]) + ' ');
         }
 
     }
-    public T removeLast(){
-        if (size == 0){
+    public T removeLast() {
+        if (size == 0) {
             return null;
         }
-        T toRemove = items[nextLast - 1];
-        nextLast -= 1;
+        T toRemove;
+        if (nextLast != 0) {
+            toRemove = items[nextLast - 1];
+            nextLast -= 1;
+        } else {
+            nextLast -= 1;
+            nextLast += length;
+            toRemove = items[0];
+        }
         size -= 1;
-        if (size/length < 0.25){
+        if (size / length < 0.25) {
             resize();
         }
         return toRemove;
 
     }
     public T removeFirst() {
-        if (size == 0){
+        if (size == 0) {
             return null;
         }
-        T toRemove = items[nextFirst + 1];
-        nextFirst += 1;
+        T toRemove;
+        if (nextFirst != length - 1) {
+            toRemove = items[nextFirst + 1];
+            nextFirst += 1;
+        } else {
+            toRemove = items[0];
+            nextFirst = 0;
+        }
         size -= 1;
-        if (size / length < 0.25){
+        if (size / length < 0.25) {
             resize();
         }
         return toRemove;
     }
     public T get(int index) {
-        if (index >= size){
+        if (index >= size) {
             return null;
         }
-        if (index+nextFirst + 1 < length){
-            return items[index+nextFirst + 1];
+        if (index + nextFirst + 1 < length) {
+            return items[index + nextFirst + 1];
         } else {
-            return items[index+nextFirst + 1 - length];
+            return items[index + nextFirst + 1 - length];
         }
     }
 }
