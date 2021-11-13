@@ -85,7 +85,7 @@ public class ArrayDeque<T> {
         } else {
             nextLast -= 1;
             nextLast += length;
-            toRemove = items[0];
+            toRemove = items[length -1];
         }
         size -= 1;
         if (size / length < 0.25) {
