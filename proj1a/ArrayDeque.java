@@ -176,7 +176,7 @@ public class ArrayDeque<T> {
 //        for (int i = 0; i < 1024; i++) {
 //            a.removeFirst();
 //            a.removeLast();
-//        }
-
-    }
+////        }
+//
+//    }
 }
