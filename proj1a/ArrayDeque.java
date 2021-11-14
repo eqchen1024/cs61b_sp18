@@ -31,16 +31,16 @@ public class ArrayDeque<T> {
     }
 
     private boolean require_sizedown() {
-        return (size < (usage_ratio * length) && size >= big_size);
+        return (size < (usage_ratio * length) && size > big_size);
     }
 
     private int get_underlying_index(int index, int offset) {
         index += offset;
-        if (index >= length) {
-            index -= length;
-        }
         if (index < 0) {
             index += length;
+        }
+        if (index >= length) {
+            index -= length;
         }
         return index;
     }
@@ -70,11 +70,11 @@ public class ArrayDeque<T> {
         nextLast = size;
     }
     private void resize_up() {
-        reshapeItems(length *= resize_factor);
+        reshapeItems(length * resize_factor);
 
     }
     private void resize_down() {
-        reshapeItems(length /= resize_factor);
+        reshapeItems(length / resize_factor);
     }
 
 
@@ -106,7 +106,7 @@ public class ArrayDeque<T> {
         items[nextLast] = null;
         size -= 1;
         if (require_sizedown()) {
-            require_sizedown();
+            resize_down();
         }
         return last;
     }
