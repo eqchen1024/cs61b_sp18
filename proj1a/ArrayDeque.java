@@ -125,9 +125,9 @@ public class ArrayDeque<T> {
             toRemove = items[length - 1];
         }
         size -= 1;
-        if (size / length < 0.25) {
-            resize_down();
-        }
+//        if (size / length < 0.25) {
+//            resize_down();
+//        }
         return toRemove;
 
     }
@@ -145,14 +145,14 @@ public class ArrayDeque<T> {
             nextFirst = 0;
         }
         size -= 1;
-        if ( length > 4 * size) {
-//            System.out.println(size);
-//            System.out.println(length);
-//            System.out.println("Downsize");
-            resize_down();
-//            System.out.println(length);
-//            System.out.println(size);
-        }
+//        if ( length > 4 * size) {
+////            System.out.println(size);
+////            System.out.println(length);
+////            System.out.println("Downsize");
+//            resize_down();
+////            System.out.println(length);
+////            System.out.println(size);
+//        }
         return toRemove;
     }
 
@@ -174,9 +174,10 @@ public class ArrayDeque<T> {
 //            a.addFirst("aa");
 //        }
 //        for (int i = 0; i < 1024; i++) {
-//            a.removeFirst();
 //            a.removeLast();
-////        }
+//            a.removeFirst();
+//
+//        }
 //
 //    }
 }
