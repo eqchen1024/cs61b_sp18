@@ -49,7 +49,7 @@ public class ArrayDeque<T> {
         if (index >= size) {
             return null;
         } else {
-            return items[get_underlying_index(nextFirst, 1 + index)]
+            return items[get_underlying_index(nextFirst, 1 + index)];
         }
     }
 
