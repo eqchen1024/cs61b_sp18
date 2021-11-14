@@ -4,180 +4,124 @@ public class ArrayDeque<T> {
     private int nextFirst;
     private int nextLast;
     private int length;
+    private int big_size = 16;
+    private int resize_factor = 2;
+    private double usage_ratio = 0.25;
+
 
     public ArrayDeque() {
         items = (T[]) new Object[8];
         size = 0;
-        nextFirst = 4;
-        nextLast = 5;
         length = items.length;
-    }
+        nextFirst = 0;
+        nextLast = 1;
 
-    private void resize_up() {
-        length = size * 4;
-        T[] newArray = (T[]) new Object[length];
-//        System.out.println(size);
-//        System.out.println(nextFirst);
-//        System.out.println(nextLast);
-        System.arraycopy(items, 0, newArray, 0, nextLast);
-        System.arraycopy(items, 0, newArray,
-                length - (size - nextFirst - 1), size - nextLast);
-        items = newArray;
-        nextFirst = length - (size - nextFirst - 1) - 1;
-//        System.out.println(nextFirst);
-//        System.out.println(nextLast);
-
-    }
-    private void resize_down() {
-        int new_length = size + 1;
-        T[] newArray = (T[]) new Object[new_length];
-        if (nextFirst < nextLast) {
-            System.arraycopy(items, nextFirst + 1, newArray, 0, nextLast - nextFirst - 1);
-            nextFirst = new_length - 1;
-            nextLast = new_length - 1;
-            length = new_length;
-        } else {
-            if (nextFirst != length - 1 && nextLast != 0) {
-                System.arraycopy(items, nextFirst + 1, newArray, 0, length - nextFirst - 1);
-                System.arraycopy(items, 0, newArray,length - nextFirst - 1 , nextLast);
-            } else if (nextFirst == length - 1 && nextLast != 0) {
-                System.arraycopy(items, 0, newArray,0 , size);
-            } else if (nextFirst != length - 1 && nextLast == 0) {
-                System.arraycopy(items, nextFirst + 1, newArray, 0, size);
-            } else {
-                System.arraycopy(items, 0, newArray, 0, size);
-            }
-            nextFirst = new_length - 1;
-            nextLast = new_length - 1;
-            length = new_length;
-        }
-        items = newArray;
-
-    }
-
-
-    public void addFirst(T item) {
-        if (size == length) {
-            resize_up();
-        }
-        items[nextFirst] = item;
-        if (nextFirst != 0) {
-            nextFirst -= 1;
-        } else {
-            nextFirst -= 1;
-            nextFirst += length;
-        }
-        size += 1;
-    }
-
-    public void addLast(T item) {
-        if (size == length) {
-            resize_up();
-        }
-        items[nextLast] = item;
-        if (nextLast != length - 1) {
-            nextLast += 1;
-        } else {
-            nextLast += 1;
-            nextLast -= length;
-        }
-        size += 1;
-    }
-
-    public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        }
-        return false;
     }
 
     public int size() {
-
         return size;
     }
 
-    public void printDeque() {
-        if (nextFirst < nextLast - 1) {
-            for (int i = nextFirst + 1; i < nextLast; i++) {
-                System.out.print(String.valueOf(items[i]) + ' ');
-            }
-        } else {
-            for (int i = nextFirst + 1; i < length; i++) {
-                System.out.print(String.valueOf(items[i]) + ' ');
-            }
-            for (int i = 0; i < nextLast; i++) {
-                System.out.print(String.valueOf(items[i]) + ' ');
-            }
-        }
+    public boolean isEmpty() {
+        return size == 0;
     }
 
-    public T removeLast() {
-        if (size == 0) {
-            return null;
-        }
-        T toRemove;
-        if (nextLast != 0) {
-            toRemove = items[nextLast - 1];
-            nextLast -= 1;
-        } else {
-            nextLast -= 1;
-            nextLast += length;
-            toRemove = items[length - 1];
-        }
-        size -= 1;
-//        if (size / length < 0.25) {
-//            resize_down();
-//        }
-        return toRemove;
-
+    private boolean require_sizeup() {
+        return size == length;
     }
 
-    public T removeFirst() {
-        if (size == 0) {
-            return null;
+    private boolean require_sizedown() {
+        return (size < (usage_ratio * length) && size >= big_size);
+    }
+
+    private int get_underlying_index(int index, int offset) {
+        index += offset;
+        if (index >= length) {
+            index -= length;
         }
-        T toRemove;
-        if (nextFirst != length - 1) {
-            toRemove = items[nextFirst + 1];
-            nextFirst += 1;
-        } else {
-            toRemove = items[0];
-            nextFirst = 0;
+        if (index < 0) {
+            index += length;
         }
-        size -= 1;
-//        if ( length > 4 * size) {
-////            System.out.println(size);
-////            System.out.println(length);
-////            System.out.println("Downsize");
-//            resize_down();
-////            System.out.println(length);
-////            System.out.println(size);
-//        }
-        return toRemove;
+        return index;
     }
 
     public T get(int index) {
         if (index >= size) {
             return null;
-        }
-        if (index + nextFirst + 1 < length) {
-            return items[index + nextFirst + 1];
         } else {
-            return items[index + nextFirst + 1 - length];
+            return items[get_underlying_index(nextFirst, 1 + index)]
         }
     }
 
-//    public static void main(String[] args) {
-//        ArrayDeque a = new ArrayDeque();
-//        for (int i = 0; i < 1024; i++) {
-//            a.addLast("aa");
-//            a.addFirst("aa");
-//        }
-//        for (int i = 0; i < 1024; i++) {
-//            a.removeLast();
-//            a.removeFirst();
-//
-//        }
-//
-//    }
+    public void printDeque() {
+        for (int i = 0; i < size; i++){
+            System.out.print(String.valueOf(get(i)) + " ");
+        }
+    }
+
+    private void reshapeItems(int newCapacity) {
+        T[] new_array = (T[]) new Object[newCapacity];
+        for (int i =0; i < size; i++) {
+            new_array[i] = get(get_underlying_index(nextFirst, 1 + i));
+        }
+        length = newCapacity;
+        items = new_array;
+        nextFirst = newCapacity -1;
+        nextLast = size;
+    }
+    private void resize_up() {
+        reshapeItems(length *= resize_factor);
+
+    }
+    private void resize_down() {
+        reshapeItems(length /= resize_factor);
+    }
+
+
+    public void addFirst(T item) {
+        if (require_sizeup()) {
+            resize_up();
+        }
+        items[nextFirst] = item;
+        nextFirst = get_underlying_index(nextFirst, -1);
+        size += 1;
+    }
+
+    public void addLast(T item) {
+        if (require_sizeup()) {
+            resize_up();
+        }
+        items[nextLast] = item;
+        nextLast = get_underlying_index(nextLast, 1);
+        size += 1;
+    }
+
+
+    public T removeLast() {
+        if (isEmpty()) {
+            return null;
+        }
+        nextLast = get_underlying_index(nextLast, -1);
+        T last = items[nextLast];
+        items[nextLast] = null;
+        size -= 1;
+        if (require_sizedown()) {
+            require_sizedown();
+        }
+        return last;
+    }
+
+    public T removeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
+        nextFirst = get_underlying_index(nextFirst, 1);
+        T first = items[nextFirst];
+        items[nextFirst] = null;
+        size -= 1;
+        if (require_sizedown()) {
+            resize_down();
+        }
+        return first;
+    }
 }
