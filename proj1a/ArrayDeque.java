@@ -62,7 +62,7 @@ public class ArrayDeque<T> {
     private void reshapeItems(int newCapacity) {
         T[] new_array = (T[]) new Object[newCapacity];
         for (int i =0; i < size; i++) {
-            new_array[i] = get(get_underlying_index(nextFirst, 1 + i));
+            new_array[i] = items[get_underlying_index(nextFirst, 1 + i)];
         }
         length = newCapacity;
         items = new_array;
