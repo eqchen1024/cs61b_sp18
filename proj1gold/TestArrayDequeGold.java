@@ -1,4 +1,6 @@
 import static org.junit.Assert.*;
+
+import jdk.nashorn.internal.ir.WhileNode;
 import org.junit.Test;
 
 public class TestArrayDequeGold {
@@ -6,34 +8,39 @@ public class TestArrayDequeGold {
         public void check1() {
                 StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<>();
                 ArrayDequeSolution<Integer> gold1 = new ArrayDequeSolution<>();
+                StringBuilder callsTrack = new StringBuilder();
 
-                for (int i = 0; i < 10; i += 1) {
-                        double numberBetweenZeroAndOne = StdRandom.uniform();
+                for (int i = 0; i < 999; i += 1) {
                         double numberBetweenZeroAndOne1 = StdRandom.uniform();
-                        if (numberBetweenZeroAndOne < 0.5) {
-                                sad1.addLast(i);
-                                gold1.addLast(i);
-                                if (numberBetweenZeroAndOne1 < 0.5) {
-                                        Integer a = sad1.removeLast();
-                                        Integer b = gold1.removeLast();
-                                        assertEquals(a, b);
+                        double numberBetweenZeroAndOne2 = StdRandom.uniform();
+                        if (numberBetweenZeroAndOne1 < 0.5) {
+                                //add
+                                if (numberBetweenZeroAndOne2 < 0.5) {
+                                        sad1.addLast(i);
+                                        gold1.addLast(i);
+                                        callsTrack.append(String.format("addLast(%d)\n", i));
                                 } else {
-                                        sad1.removeFirst();
-                                        gold1.removeFirst();
+                                        sad1.addFirst(i);
+                                        gold1.addFirst(i);
+                                        callsTrack.append(String.format("addFirst(%d)\n", i));
                                 }
 
                         } else {
-                                sad1.addFirst(i);
-                                gold1.addFirst(i);
-                                if (numberBetweenZeroAndOne1 < 0.5) {
-                                        sad1.removeLast();
-                                        gold1.removeLast();
+                                //remove
+                                if (numberBetweenZeroAndOne2 < 0.5) {
+                                        callsTrack.append("removeLast()\n");
+                                        Integer a = sad1.removeLast();
+                                        Integer b = gold1.removeLast();
+                                        assertEquals(callsTrack.toString(), a, b);
                                 } else {
-                                        sad1.removeFirst();
-                                        gold1.removeFirst();
+                                        callsTrack.append("removeFirst()\n");
+                                        Integer a = sad1.removeFirst();
+                                        Integer b = gold1.removeFirst();
+                                        assertEquals(callsTrack.toString(), a, b);
+
                                 }
+
                         }
                 }
-
         }
         }
