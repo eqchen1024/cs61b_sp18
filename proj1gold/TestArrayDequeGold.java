@@ -1,6 +1,4 @@
 import static org.junit.Assert.*;
-
-import jdk.nashorn.internal.ir.WhileNode;
 import org.junit.Test;
 
 public class TestArrayDequeGold {
