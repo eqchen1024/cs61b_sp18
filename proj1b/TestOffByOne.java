@@ -13,7 +13,7 @@ public class TestOffByOne {
     public void testOBO() {
         Assert.assertTrue(offByOne.equalChars('a', 'b'));
         Assert.assertFalse(offByOne.equalChars('a', 'e'));
-        Assert.assertFalse(offByOne.equalChars('Z', 'a'));
+        Assert.assertTrue(offByOne.equalChars('Z', 'Y'));
         Assert.assertTrue(offByOne.equalChars('&', '%'));
     }
 
