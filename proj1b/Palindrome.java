@@ -35,7 +35,7 @@ public class Palindrome {
             char head = deque.removeFirst();
             char tail = deque.removeLast();
             if (cc.equalChars(head,tail)) {
-                return isPalindrome(deque);
+                return isPalindrome(deque,cc);
             } else {
                 return false;
             }

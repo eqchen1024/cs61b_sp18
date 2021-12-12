@@ -21,13 +21,19 @@ public class TestPalindrome {
         boolean flag1 = palindrome.isPalindrome("noon");
         assertFalse(flag);
         assertTrue(flag1);
+
+        boolean flag2 = palindrome.isPalindrome("a");
+        boolean flag3 = palindrome.isPalindrome("");
+        assertTrue(flag2);
+        assertTrue(flag3);
     }
 
     @Test
     public void testIsPalindromeOBO() {
 
-        boolean flag = palindrome.isPalindrome("flake",cc);
-        boolean flag1 = palindrome.isPalindrome("noon",cc);
+        boolean flag = palindrome.isPalindrome("flake", cc);
+        boolean flag1 = palindrome.isPalindrome("noon", cc);
+
         assertTrue(flag);
         assertFalse(flag1);
 
