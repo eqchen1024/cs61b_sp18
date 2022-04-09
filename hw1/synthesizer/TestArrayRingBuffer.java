@@ -1,3 +1,5 @@
+package synthesizer;
+
 import org.junit.Test;
 
 /** Tests the ArrayRingBuffer class.
