@@ -103,7 +103,7 @@ public class HexWorld {
         int b = HexWorld.recursiveDraw(world,hexSize,RD,cnt-1);
         return a + b;
     }
-
+    //TODO ADD A DRAW VERTICAL HEX METHOD 
     public static void main(String[] args) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         TERenderer ter = new TERenderer();
