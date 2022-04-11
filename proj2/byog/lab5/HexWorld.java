@@ -63,12 +63,11 @@ public class HexWorld {
 
     }
 
-    public static Hex addRightUpHex(TETile[][] world,int hexSize,TETile texture,Hex baseHex){
+    public static Hex getRightUpHex(TETile[][] world,int hexSize,TETile texture,Hex baseHex){
         int posX = baseHex.posRB.posX ;
         int posY = baseHex.posRB.posY;
         Pos rightUpPos = new Pos(posX,posY);
         Hex rightUpHex = new Hex(rightUpPos,3);
-        addHexagon(world,hexSize,rightUpHex.posLD,texture);
         return rightUpHex;
     }
 
@@ -77,19 +76,18 @@ public class HexWorld {
         switch (tileNum) {
             case 0: return Tileset.WALL;
             case 1: return Tileset.FLOWER;
-            case 2: return Tileset.NOTHING;
+            case 2: return Tileset.PLAYER;
             case 3: return Tileset.TREE;
             case 4: return Tileset.LOCKED_DOOR;
             default: return Tileset.NOTHING;
         }
     }
 
-    public static Hex addRightDownHex(TETile[][] world,int hexSize,TETile texture,Hex baseHex){
+    public static Hex getRightDownHex(TETile[][] world,int hexSize,TETile texture,Hex baseHex){
         int posX = baseHex.posRD.posX ;
         int posY = baseHex.posRD.posY;
         Pos rightDownPos = new Pos(posX,posY);
         Hex rightDownHex = new Hex(rightDownPos,3);
-        addHexagon(world,hexSize,rightDownHex.posLD,texture);
         return rightDownHex;
     }
 
@@ -97,31 +95,60 @@ public class HexWorld {
         if (cnt == 0){
             return 0;
         }
-        Hex RU = HexWorld.addRightUpHex(world,hexSize,randomTile(),baseHex);
-        Hex RD = HexWorld.addRightDownHex(world,hexSize,randomTile(),baseHex);
+        Hex RU = HexWorld.getRightUpHex(world,hexSize,randomTile(),baseHex);
+        Hex RD = HexWorld.getRightDownHex(world,hexSize,randomTile(),baseHex);
         int a = HexWorld.recursiveDraw(world,hexSize,RU,cnt-1);
         int b = HexWorld.recursiveDraw(world,hexSize,RD,cnt-1);
         return a + b;
     }
-    //TODO ADD A DRAW VERTICAL HEX METHOD 
+
+    public static void VerticalHexDraw(TETile[][] world,int hexSize,Hex baseHex,int cnt){
+        for (int i = 1; i <= cnt; i++){
+            Pos NewLD = new Pos(baseHex.posLD.posX, baseHex.posLD.posY + hexSize * i * 2);
+            Hex NewHex = new Hex(NewLD,3);
+            addHexagon(world,hexSize,NewHex.posLD,randomTile());
+        }
+    }
+
+        //TODO ADD A DRAW VERTICAL HEX METHOD
     public static void main(String[] args) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         TERenderer ter = new TERenderer();
-        ter.initialize(50, 50);
+        ter.initialize(100, 100);
 
         // initialize tiles
-        TETile[][] world = new TETile[50][50];
-        for (int x = 0; x < 50; x += 1) {
-            for (int y = 0; y < 50; y += 1) {
+        TETile[][] world = new TETile[100][100];
+        for (int x = 0; x < 100; x += 1) {
+            for (int y = 0; y < 100; y += 1) {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        Pos hexLD = new Pos(20,20);
+        Pos hexLD = new Pos(20,40);
         Hex one = new Hex(hexLD,3);
-        HexWorld.addHexagon(world,3,hexLD,Tileset.FLOWER);
+//        HexWorld.addHexagon(world,3,hexLD,Tileset.FLOWER);
 //        Hex two = HexWorld.addRightUpHex(world,3,Tileset.MOUNTAIN,one);
 //        HexWorld.addRightDownHex(world,3,Tileset.GRASS,one);
-        HexWorld.recursiveDraw(world,3,one,3);
+//        HexWorld.recursiveDraw(world,3,one,3);
+//        VerticalHexDraw(world,3,one,3);
+//        VerticalHexDraw(world,5,one,5);
+        int strip_cnt = 5;
+        int strip_len;
+        for (int i = 0; i < strip_cnt; i++){
+            if (i < strip_cnt/2) {
+                strip_len = 3+i;
+                System.out.println(strip_len);
+                VerticalHexDraw(world,3,one,strip_len);
+                one = getRightDownHex(world,3,randomTile(),one);
+            } else{
+                strip_len = strip_cnt - i - 1 + 3;
+                System.out.println(strip_len);
+                VerticalHexDraw(world,3,one,strip_len);
+                one = getRightUpHex(world,3,randomTile(),one);
+            }
+
+
+        }
+
         ter.renderFrame(world);
 
     }
