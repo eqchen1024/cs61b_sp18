@@ -10,7 +10,7 @@ import byog.TileEngine.Tileset;
 
 
 public class WorldGeneration {
-    private static final int SEED = 5;
+    private static final int SEED = 211;
     private static final Random RANDOM = new Random(SEED);
 
     private static class Pos{
@@ -37,10 +37,10 @@ public class WorldGeneration {
         public Random RANDOM;
         public Rectangle outer_r;
         public Rectangle inner_r;
-        public Room[] neighbour =new Room[4];
+        public Room[] neighbour =new Room[10];
         public Pos[] corners = new Pos[4];
-        public Pos[] doors = new Pos[4];
-        public int[] sideOfDoors = new int[4];
+        public Pos[] doors = new Pos[10];
+        public int[] sideOfDoors = new int[10];
 
         public Room(Rectangle r, Random random) {
             outer_r = r;
@@ -114,14 +114,14 @@ public class WorldGeneration {
             switch (sideOfDoor) {
                 // down
                 case 0:
-                    newRoomPosition = new Pos(door.x - RandomUtils.uniform(RANDOM, width - 1) - 1
+                    newRoomPosition = new Pos(door.x - RandomUtils.uniform(RANDOM,1, width - 1)
                             , door.y - height + 1);
                     neighbourRectangle = new Rectangle(newRoomPosition, width, height);
                     return new Room(neighbourRectangle, RANDOM);
 
                 // up
                 case 1:
-                    newRoomPosition = new Pos(door.x - RandomUtils.uniform(RANDOM, width - 1)
+                    newRoomPosition = new Pos(door.x - RandomUtils.uniform(RANDOM,1, width - 1)
                             , door.y);
                     neighbourRectangle = new Rectangle(newRoomPosition, width, height);
                     return new Room(neighbourRectangle, RANDOM);
@@ -129,14 +129,14 @@ public class WorldGeneration {
                 // left
                 case 2:
                     newRoomPosition = new Pos(door.x - width + 1
-                            , door.y - RandomUtils.uniform(RANDOM, height - 1) - 1);
+                            , door.y - RandomUtils.uniform(RANDOM, 1, height - 1));
                     neighbourRectangle = new Rectangle(newRoomPosition, width, height);
                     return new Room(neighbourRectangle, RANDOM);
 
                 // right
                 case 3:
                     newRoomPosition = new Pos(door.x
-                            , door.y - RandomUtils.uniform(RANDOM, height - 1) - 1);
+                            , door.y - RandomUtils.uniform(RANDOM, 1, height - 1));
                     neighbourRectangle = new Rectangle(newRoomPosition, width, height);
                     return new Room(neighbourRectangle, RANDOM);
 
@@ -183,7 +183,11 @@ public class WorldGeneration {
     public static void drawRectangle(TETile[][] world,Rectangle r, TETile texture){
         for (int x = r.position.x; x < r.position.x + r.width; x += 1) {
             for (int y = r.position.y; y < r.position.y + r.height; y += 1) {
-                world[x][y] = texture;
+                if (world[x][y] == Tileset.FLOOR && texture == Tileset.WALL){
+                    world[x][y] = Tileset.FLOOR;
+                } else{
+                    world[x][y] = texture;
+                }
             }
         }
     }
@@ -219,7 +223,7 @@ public class WorldGeneration {
         Rectangle rec1 = new Rectangle(R1,5,7);
         Room r1 = new Room(rec1,RANDOM);
         drawRoom(world,r1);
-        r1.genDoors(4);
+        r1.genDoors(9);
 
         r1.genAllNeighbourRooms(RANDOM);
         drawAllNeighbourRooms(world,r1);
