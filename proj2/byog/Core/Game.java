@@ -3,11 +3,14 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
+import java.util.Arrays;
+
+
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 60;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -24,6 +27,7 @@ public class Game {
      * world. However, the behavior is slightly different. After playing with "n123sss:q", the game
      * should save, and thus if we then called playWithInputString with the string "l", we'd expect
      * to get the exact same world back again, since this corresponds to loading the saved game.
+     *
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
      */
@@ -31,8 +35,30 @@ public class Game {
         // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
+        ter.initialize(Game.WIDTH,Game.HEIGHT);
+        // extract commend and seed
+        String inputLowerCase = input.toLowerCase();
+        String[] inputArray = inputLowerCase.split("");
+        String firstCommand = inputArray[0];
+        String[] menuConfig = inputLowerCase.split("s");
+        String seedStr = menuConfig[0].replaceAll("[a-z]", "");
+        int seed = Integer.parseInt(seedStr);
+        System.out.println(seed);
+        TETile[][] world = null;
+        if (firstCommand.equals("n")) {
+            System.out.println("new game start");
+            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        } else if (firstCommand.equals("l")) {
+            System.out.println("load game start");
+            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
+        } else if (firstCommand.equals("q")) {
+            System.out.println("quit");
+            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
+        }
+        //show the world
+        ter.renderFrame(world);
+        return world;
     }
 }
+

@@ -1,7 +1,6 @@
 package byog.Core;
 
 import java.util.Random;
-import byog.Core.RandomUtils;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
@@ -10,13 +9,13 @@ import byog.TileEngine.Tileset;
 
 
 public class WorldGeneration {
-    private static final int SEED = 9;
-    private static final Random RANDOM = new Random(SEED);
+    public static int SEED;
+    public static Random RANDOM;
 
-    private static class Pos{
-        private final int  x;
-        private final int y;
-        private Pos(int xPos,int yPos){
+    public static class Pos{
+        public final int  x;
+        public final int y;
+        public Pos(int xPos,int yPos){
               x = xPos;
               y = yPos;
         }
@@ -161,8 +160,8 @@ public class WorldGeneration {
             for (int i = 0; i < doors.length; i++) {
                 breakout = false;
                 if (doors[i] != null) {
-                    int x = RandomUtils.uniform(RANDOM,3, 7);
-                    int y = RandomUtils.uniform(RANDOM,12,15);
+                    int x = RandomUtils.uniform(RANDOM,3, 4);
+                    int y = RandomUtils.uniform(RANDOM,7,9);
                     int z;
                     if (i%2==RandomUtils.uniform(RANDOM,2)){
                         z = x;
@@ -179,7 +178,7 @@ public class WorldGeneration {
                                 break;
                         }
                     }
-                    if (breakout == false) {
+                    if (!breakout) {
                         neighbour[i] = room_n;
                     } else{
                             int a = doors[i].x;
@@ -258,16 +257,16 @@ public class WorldGeneration {
 
     //利用递归生成room和way
 
-    public static void main(String[] args) {
+    public static TETile[][] genWorld(int seed,int w, int h) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-        TERenderer ter = new TERenderer();
-        int width = 100;
-        int height = 60;
+        SEED = seed;
+        RANDOM= new Random(SEED);
+        int width = w;
+        int height = h;
         Pos origin = new Pos(0,0);
         Rectangle canvas = new Rectangle(origin,width,height);
         Pos R1 = new Pos(60,30);
 
-        ter.initialize(width, height);
 
         // initialize tiles
         TETile[][] world = new TETile[width][height];
@@ -276,15 +275,13 @@ public class WorldGeneration {
         Rectangle rec1 = new Rectangle(R1,4,5);
         Room r1 = new Room(rec1,RANDOM);
         drawRoom(world,r1);
-        r1.genDoors(4);
+        r1.genDoors(2);
 
         r1.genAllNeighbourRooms(world,RANDOM);
         drawDoors(world,r1);
         drawAllRoomsRecursion(world, r1,7);
 
-        //show the world
-        ter.renderFrame(world);
-
+        return world;
     }
 }
 
