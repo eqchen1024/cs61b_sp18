@@ -27,9 +27,7 @@ public class MemoryGame {
 
         int seed = Integer.parseInt(args[0]);
         MemoryGame game = new MemoryGame(40, 40, seed);
-        String a = game.generateRandomString(5);
-        System.out.println(a);
-//        game.startGame();
+        game.startGame();
 
     }
 
@@ -66,20 +64,77 @@ public class MemoryGame {
     public void drawFrame(String s) {
         //TODO: Take the string and display it in the center of the screen
         //TODO: If game is not over, display relevant game information at the top of the screen
-
+        StdDraw.clear(Color.BLACK);
+        StdDraw.setPenColor(StdDraw.RED);
+        StdDraw.text(width/2,height/2, s);
+        StdDraw.text(width * 0.16 ,height * 0.95, "Round: " + round);
+        if (playerTurn) {
+            StdDraw.text(width * 0.5 ,height * 0.95, "Type!");
+        } else {
+            StdDraw.text(width * 0.5 ,height * 0.95, "Watch!");
+        }
+        int encourageIdx = RandomUtils.uniform(rand,ENCOURAGEMENT.length);
+        StdDraw.text(width * 0.80 ,height * 0.95, ENCOURAGEMENT[encourageIdx]);
+        StdDraw.line(0, height * 0.9, width, height * 0.9);
+        StdDraw.show();
     }
 
     public void flashSequence(String letters) {
+        StdDraw.setPenColor(StdDraw.RED);
         //TODO: Display each character in letters, making sure to blank the screen between letters
+        for(int i = 0; i < letters.length(); i++){
+            drawFrame("");
+            StdDraw.show();
+            StdDraw.pause(500);
+            drawFrame(letters.substring(i,i+1));
+            StdDraw.show();
+            StdDraw.pause(1000);
+            drawFrame("");
+            StdDraw.show();
+        }
     }
 
     public String solicitNCharsInput(int n) {
         //TODO: Read n letters of player input
-        return null;
+        playerTurn = true;
+        drawFrame("");
+        String userAnswer = "";
+        StdDraw.setPenColor(StdDraw.RED);
+        while (userAnswer.length() < n){
+            if(StdDraw.hasNextKeyTyped()){
+                userAnswer = userAnswer + StdDraw.nextKeyTyped();
+                StdDraw.clear(Color.BLACK);
+                StdDraw.show();
+                drawFrame(userAnswer);
+                StdDraw.show();
+            }
+        }
+        drawFrame(userAnswer);
+        StdDraw.show();
+        StdDraw.pause(1000);
+        playerTurn = false;
+        return userAnswer;
     }
 
     public void startGame() {
         //TODO: Set any relevant variables before the game starts
+        int encourageIdx;
+        while (!gameOver) {
+            round = round + 1;
+            encourageIdx = RandomUtils.uniform(rand,ENCOURAGEMENT.length);
+            drawFrame("Round "  + round + " " + ENCOURAGEMENT[encourageIdx]);
+            StdDraw.pause(1000);
+            String sequence = generateRandomString(round);
+            flashSequence(sequence);
+            String userAnswer = solicitNCharsInput(sequence.length());
+            if (userAnswer.equals(sequence)) {
+                drawFrame("NewBee");
+            } else {
+                drawFrame("GG! Final Level: " + round);
+                gameOver = true;
+            }
+        }
+
 
         //TODO: Establish Game loop
     }
