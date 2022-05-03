@@ -9,12 +9,13 @@ import byog.TileEngine.Tileset;
 
 
 public class WorldGeneration {
-    public static int SEED;
+    public static long SEED;
     public static Random RANDOM;
+    public static int MaxRecursionDepth = 11;
 
     public static class Pos{
-        public final int  x;
-        public final int y;
+        public int  x;
+        public int y;
         public Pos(int xPos,int yPos){
               x = xPos;
               y = yPos;
@@ -147,7 +148,7 @@ public class WorldGeneration {
                             , door.y - RandomUtils.uniform(RANDOM, 1, height - 1));
                     neighbourRectangle = new Rectangle(newRoomPosition, width, height);
                     room = new Room(neighbourRectangle, RANDOM);
-                    room.doorFromSide = 3;
+                    room.doorFromSide = 1;
                     return room;
 
             }
@@ -160,7 +161,7 @@ public class WorldGeneration {
             for (int i = 0; i < doors.length; i++) {
                 breakout = false;
                 if (doors[i] != null) {
-                    int x = RandomUtils.uniform(RANDOM,3, 4);
+                    int x = RandomUtils.uniform(RANDOM,3, 5);
                     int y = RandomUtils.uniform(RANDOM,7,9);
                     int z;
                     if (i%2==RandomUtils.uniform(RANDOM,2)){
@@ -213,9 +214,9 @@ public class WorldGeneration {
         }
     }
     //todo 记住上一步从哪个方向过来的 不要往回生成方块
-    public static int drawAllRoomsRecursion(TETile[][] world,Room room,int cnt){
+    public static int drawAllRoomsRecursion(TETile[][] world,Room room,int cnt, Random RANDOM){
         int a = 0;
-        if(cnt==0){
+        if(cnt < RandomUtils.uniform(RANDOM,0, MaxRecursionDepth/2)){
             drawRoom(world,room);
             return 0;
         } else{
@@ -225,7 +226,7 @@ public class WorldGeneration {
             room.genAllNeighbourRooms(world,RANDOM);
             for (int i = 0; i < room.neighbour.length; i++) {
                 if (room.neighbour[i] != null) {
-                    a += drawAllRoomsRecursion(world, room.neighbour[i],cnt - 1);
+                    a += drawAllRoomsRecursion(world, room.neighbour[i],cnt - 1,RANDOM);
                 }
             }
             return a;
@@ -250,6 +251,39 @@ public class WorldGeneration {
     }
 
 
+    public static boolean isEscape(TETile[][] world, int x, int y){
+        if (world[x-1][y] == Tileset.NOTHING || world[x+1][y] == Tileset.NOTHING ||
+                world[x][y-1] == Tileset.NOTHING || world[x][y+1] == Tileset.NOTHING){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static void drawEscape(TETile[][] world){
+        boolean isWall = false;
+        while (!isWall) {
+            int x = RandomUtils.uniform(RANDOM, world.length);
+            int y = RandomUtils.uniform(RANDOM, world[1].length);
+            if (world[x][y] == Tileset.WALL && isEscape(world,x,y)) {
+                world[x][y] = Tileset.LOCKED_DOOR;
+                break;
+            }
+        }
+    }
+
+
+    public static void drawKey(TETile[][] world){
+        boolean isFloor = false;
+        while (!isFloor) {
+            int x = RandomUtils.uniform(RANDOM, world.length);
+            int y = RandomUtils.uniform(RANDOM, world[1].length);
+            if (world[x][y] == Tileset.FLOOR) {
+                world[x][y] = Tileset.FLOWER;
+                break;
+            }
+        }
+    }
 
     public static void genBackGround(TETile[][] world,Rectangle r){
         drawRectangle(world,r,Tileset.NOTHING);
@@ -257,7 +291,7 @@ public class WorldGeneration {
 
     //利用递归生成room和way
 
-    public static TETile[][] genWorld(int seed,int w, int h) {
+    public static TETile[][] genWorld(long seed,int w, int h) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         SEED = seed;
         RANDOM= new Random(SEED);
@@ -279,8 +313,9 @@ public class WorldGeneration {
 
         r1.genAllNeighbourRooms(world,RANDOM);
         drawDoors(world,r1);
-        drawAllRoomsRecursion(world, r1,7);
-
+        drawAllRoomsRecursion(world, r1,MaxRecursionDepth,RANDOM);
+        drawEscape(world);
+        drawKey(world);
         return world;
     }
 }
