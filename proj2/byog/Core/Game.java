@@ -15,7 +15,9 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 100;
     public static final int HEIGHT = 60;
-
+    public static String itemUnderMouse = "";
+    public int mouseXLag1 = 0;
+    public int mouseYLag1 = 0;
 
     public void drawTitle(String s) {
         //TODO: Take the string and display it in the center of the screen
@@ -68,6 +70,20 @@ public class Game {
         return Long.parseLong(userAnswer);
     }
 
+
+    public void showTileUnderMouse(TETile[][] world){
+        int mouseX = (int) Math.floor(StdDraw.mouseX());
+        int mouseY = (int) Math.floor(StdDraw.mouseY());
+        if (mouseX < WIDTH && mouseX > 0 && mouseY < HEIGHT - 1 && mouseY > 0 && (mouseXLag1 != mouseX
+                || mouseYLag1 !=mouseY))  {
+            ter.renderFrame(world);
+            StdDraw.setPenColor(StdDraw.WHITE);
+            StdDraw.text(Game.WIDTH * 0.1, Game.HEIGHT * 0.95,  world[mouseX][mouseY+1].description());
+            StdDraw.show();
+            mouseXLag1 = mouseX;
+            mouseYLag1 = mouseY;
+        }
+    }
     public void play(TETile[][] world, Random random){
         Player p1 = new Player();
         p1.initialize(world,random);
@@ -76,13 +92,18 @@ public class Game {
         StdDraw.setPenColor(StdDraw.WHITE);
         while (true) {
             while (moveCmd.length() < 1){
+                showTileUnderMouse(world);
                 if(StdDraw.hasNextKeyTyped()){
                     moveCmd = moveCmd + StdDraw.nextKeyTyped();
                     p1.move(world,moveCmd);
                     ter.renderFrame(world);
+                    mouseXLag1 = 0;
+                    mouseYLag1 = 0;
+
                 }
             }
             moveCmd = "";
+
         }
     }
 
@@ -92,7 +113,7 @@ public class Game {
      */
     public void playWithKeyboard() {
         // design the main menu
-        ter.initialize(Game.WIDTH,Game.HEIGHT);
+        ter.initialize(Game.WIDTH,Game.HEIGHT,0,-1);
         drawTitle("");
         String command = ListenUserCommand(1);
         TETile[][] world = null;
@@ -146,6 +167,8 @@ public class Game {
         if (firstCommand.equals("n")) {
             System.out.println("new game start");
             world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
+            ter.renderFrame(world);
+            play(world,new Random(seed));
 
         } else if (firstCommand.equals("l")) {
             System.out.println("load game start");

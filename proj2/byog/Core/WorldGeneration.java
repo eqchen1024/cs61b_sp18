@@ -252,8 +252,10 @@ public class WorldGeneration {
 
 
     public static boolean isEscape(TETile[][] world, int x, int y){
-        if (world[x-1][y] == Tileset.NOTHING || world[x+1][y] == Tileset.NOTHING ||
-                world[x][y-1] == Tileset.NOTHING || world[x][y+1] == Tileset.NOTHING){
+        if ((world[x-1][y] == Tileset.NOTHING || world[x+1][y] == Tileset.NOTHING ||
+                world[x][y-1] == Tileset.NOTHING || world[x][y+1] == Tileset.NOTHING) &&
+                (world[x-1][y] == Tileset.FLOOR || world[x+1][y] == Tileset.FLOOR ||
+                world[x][y-1] == Tileset.FLOOR || world[x][y+1] == Tileset.FLOOR)){
             return true;
         } else {
             return false;
