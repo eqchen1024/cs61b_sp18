@@ -72,6 +72,18 @@ public class Game {
         Player p1 = new Player();
         p1.initialize(world,random);
         ter.renderFrame(world);
+        String moveCmd = "";
+        StdDraw.setPenColor(StdDraw.WHITE);
+        while (true) {
+            while (moveCmd.length() < 1){
+                if(StdDraw.hasNextKeyTyped()){
+                    moveCmd = moveCmd + StdDraw.nextKeyTyped();
+                    p1.move(world,moveCmd);
+                    ter.renderFrame(world);
+                }
+            }
+            moveCmd = "";
+        }
     }
 
 
@@ -144,6 +156,7 @@ public class Game {
         }
         //show the world
         ter.renderFrame(world);
+
         return world;
     }
 }
