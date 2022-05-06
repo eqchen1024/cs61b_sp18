@@ -56,5 +56,6 @@ public class Player {
             pos.y = targetY;
             world[ pos.x ][pos.y] = Tileset.PLAYER;
         }
+        WorldGeneration.playerPos = pos;
     }
 }

@@ -84,6 +84,11 @@ public class Game {
             mouseYLag1 = mouseY;
         }
     }
+
+    public void save(TETile[][] world){
+        
+
+    }
     public void play(TETile[][] world, Random random){
         Player p1 = new Player();
         p1.initialize(world,random);
@@ -95,11 +100,17 @@ public class Game {
                 showTileUnderMouse(world);
                 if(StdDraw.hasNextKeyTyped()){
                     moveCmd = moveCmd + StdDraw.nextKeyTyped();
-                    p1.move(world,moveCmd);
-                    ter.renderFrame(world);
-                    mouseXLag1 = 0;
-                    mouseYLag1 = 0;
-
+                    if (moveCmd.equals(":")){
+                        StdDraw.pause(5000);
+                        if (StdDraw.nextKeyTyped()=='q'){
+                            save(world);
+                        }
+                    } else {
+                        p1.move(world,moveCmd);
+                        ter.renderFrame(world);
+                        mouseXLag1 = 0;
+                        mouseYLag1 = 0;
+                    }
                 }
             }
             moveCmd = "";
@@ -131,7 +142,7 @@ public class Game {
 //            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
         } else if (command.equals("q")) {
             System.out.println("quit");
-//            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
+            System.exit (0);
         }
 
 

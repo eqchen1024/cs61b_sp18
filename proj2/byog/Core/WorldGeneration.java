@@ -12,6 +12,9 @@ public class WorldGeneration {
     public static long SEED;
     public static Random RANDOM;
     public static int MaxRecursionDepth = 11;
+    public static Pos keyPos;
+    public static Pos doorPos;
+    public static Pos playerPos;
 
     public static class Pos{
         public int  x;
@@ -269,6 +272,7 @@ public class WorldGeneration {
             int y = RandomUtils.uniform(RANDOM, world[1].length);
             if (world[x][y] == Tileset.WALL && isEscape(world,x,y)) {
                 world[x][y] = Tileset.LOCKED_DOOR;
+                doorPos = new Pos(x,y);
                 break;
             }
         }
@@ -282,6 +286,7 @@ public class WorldGeneration {
             int y = RandomUtils.uniform(RANDOM, world[1].length);
             if (world[x][y] == Tileset.FLOOR) {
                 world[x][y] = Tileset.FLOWER;
+                keyPos = new Pos(x,y);
                 break;
             }
         }
