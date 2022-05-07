@@ -2,9 +2,12 @@ package byog.Core;
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
+import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -87,8 +90,62 @@ public class Game {
         }
     }
 
-    public void load(){
+    public void reproduceWorld(String[] paramList) {
+        long SEED = Long.parseLong(paramList[0]);
+        int keyPosX = Integer.parseInt(paramList[1]);
+        int keyPosY = Integer.parseInt(paramList[2]);
+        int doorPosX = Integer.parseInt(paramList[3]);
+        int doorPosY = Integer.parseInt(paramList[4]);
+        int playerPosX = Integer.parseInt(paramList[5]);
+        int playerPosY = Integer.parseInt(paramList[6]);
+        boolean isDoorOpened = Boolean.parseBoolean(paramList[7]);
+        boolean isKeyGot = Boolean.parseBoolean(paramList[8]);
+        ter.initialize(Game.WIDTH,Game.HEIGHT,0,0);
+        TETile[][] world = WorldGeneration.genWorld(SEED, Game.WIDTH,Game.HEIGHT);
+        WorldGeneration.keyPos = new WorldGeneration.Pos(keyPosX,keyPosY);
+        WorldGeneration.doorPos = new WorldGeneration.Pos(doorPosX,doorPosY);
+        WorldGeneration.playerPos = new WorldGeneration.Pos(playerPosX,playerPosY);
+        WorldGeneration.isDoorOpened = isDoorOpened;
+        WorldGeneration.isKeyGot = isKeyGot;
+        Player player = new Player();
+        player.pos = WorldGeneration.playerPos;
+        world[playerPosX][playerPosY] = Tileset.PLAYER;
+        System.out.println(WorldGeneration.isKeyGot);
+        if (isKeyGot && world[keyPosX][keyPosY] != Tileset.PLAYER) {
+            player.hasKey = true;
+            world[keyPosX][keyPosY] = Tileset.FLOOR;
+        } else if (isKeyGot && world[keyPosX][keyPosY] == Tileset.PLAYER){
+            player.hasKey = true;
+        }
+        if (isDoorOpened) {
+            world[doorPosX][doorPosY] = Tileset.UNLOCKED_DOOR;
+        }
+        ter.renderFrame(world);
+        play(world,player);
+    }
 
+
+    public String[] parseParam(String params){
+        String[] paramList = params.split("\t");
+        return paramList;
+    }
+
+    public void load(String filePath){
+        try {
+            System.out.println("loading");
+            FileReader reader = new FileReader(filePath);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            String params = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                params = line;
+            }
+            reader.close();
+            String[] paramList = parseParam(params);
+            reproduceWorld(paramList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void save(){
@@ -122,9 +179,7 @@ public class Game {
 
 
     }
-    public void play(TETile[][] world, Random random){
-        Player p1 = new Player();
-        p1.initialize(world,random);
+    public void play(TETile[][] world,Player p1){
         ter.renderFrame(world);
         String moveCmd = "";
         StdDraw.setPenColor(StdDraw.WHITE);
@@ -161,7 +216,8 @@ public class Game {
         drawTitle("");
         String command = ListenUserCommand(1);
         TETile[][] world = null;
-        if (command.equals("n")) {
+
+        if (command.equalsIgnoreCase("n")) {
             System.out.println("new game start");
             drawTitle("Please Enter a seed");
             StdDraw.pause(1000);
@@ -169,11 +225,14 @@ public class Game {
             world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
             ter.renderFrame(world);
             StdDraw.pause(1000);
-            play(world,new Random(seed));
-        } else if (command.equals("l")) {
+            Player p1 = new Player();
+            p1.initialize(world,new Random(seed));
+            play(world,p1);
+
+        } else if (command.equalsIgnoreCase("l")) {
             System.out.println("load game start");
-//            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
-        } else if (command.equals("q")) {
+            load("./byog/Core/worldStatus.txt");
+        } else if (command.equalsIgnoreCase("q")) {
             System.out.println("quit");
             System.exit (0);
         }
@@ -208,18 +267,23 @@ public class Game {
         long seed = Long.parseLong(seedStr);
         System.out.println(seed);
         TETile[][] world = null;
-        if (firstCommand.equals("n")) {
+
+        if (firstCommand.equalsIgnoreCase("n")) {
             System.out.println("new game start");
             world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
             ter.renderFrame(world);
-            play(world,new Random(seed));
+            Player p1 = new Player();
+            p1.initialize(world,new Random(seed));
+            play(world,p1);
 
-        } else if (firstCommand.equals("l")) {
+        } else if (firstCommand.equalsIgnoreCase("l")) {
             System.out.println("load game start");
             world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
-        } else if (firstCommand.equals("q")) {
+            load("./byog/Core/worldStatus.txt");
+
+        } else if (firstCommand.equalsIgnoreCase("q")) {
             System.out.println("quit");
-            world = WorldGeneration.genWorld(seed, Game.WIDTH,Game.HEIGHT);
+            System.exit (0);
         }
         //show the world
         ter.renderFrame(world);

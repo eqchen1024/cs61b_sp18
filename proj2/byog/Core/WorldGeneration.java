@@ -167,7 +167,7 @@ public class WorldGeneration {
                 breakout = false;
                 if (doors[i] != null) {
                     int x = RandomUtils.uniform(RANDOM,3, 4);
-                    int y = RandomUtils.uniform(RANDOM,12,18);
+                    int y = RandomUtils.uniform(RANDOM,10,12);
                     int z;
                     if (i%2==RandomUtils.uniform(RANDOM,2)){
                         z = x;
