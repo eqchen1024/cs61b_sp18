@@ -85,8 +85,12 @@ public class Game {
         }
     }
 
+    public void load(){
+
+    }
+
     public void save(TETile[][] world){
-        
+
 
     }
     public void play(TETile[][] world, Random random){
@@ -124,7 +128,7 @@ public class Game {
      */
     public void playWithKeyboard() {
         // design the main menu
-        ter.initialize(Game.WIDTH,Game.HEIGHT,0,-1);
+        ter.initialize(Game.WIDTH,Game.HEIGHT,0,0);
         drawTitle("");
         String command = ListenUserCommand(1);
         TETile[][] world = null;

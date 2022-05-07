@@ -47,6 +47,7 @@ public class Player {
                 System.out.println("Please find a key");
             } else {
                 world[targetX][targetY] = Tileset.UNLOCKED_DOOR;
+                WorldGeneration.isDoorOpened = true;
             }
         } else if (world[targetX][targetY] == Tileset.FLOWER) {
             System.out.println("you get the key");
@@ -55,6 +56,7 @@ public class Player {
             pos.x = targetX;
             pos.y = targetY;
             world[ pos.x ][pos.y] = Tileset.PLAYER;
+            WorldGeneration.isKeyGot = true;
         }
         WorldGeneration.playerPos = pos;
     }

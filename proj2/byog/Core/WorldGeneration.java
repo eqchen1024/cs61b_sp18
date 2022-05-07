@@ -11,10 +11,12 @@ import byog.TileEngine.Tileset;
 public class WorldGeneration {
     public static long SEED;
     public static Random RANDOM;
-    public static int MaxRecursionDepth = 11;
+    public static int MaxRecursionDepth = 8;
     public static Pos keyPos;
     public static Pos doorPos;
     public static Pos playerPos;
+    public static boolean isDoorOpened = false;
+    public static boolean isKeyGot = false;
 
     public static class Pos{
         public int  x;
@@ -164,8 +166,8 @@ public class WorldGeneration {
             for (int i = 0; i < doors.length; i++) {
                 breakout = false;
                 if (doors[i] != null) {
-                    int x = RandomUtils.uniform(RANDOM,3, 5);
-                    int y = RandomUtils.uniform(RANDOM,7,9);
+                    int x = RandomUtils.uniform(RANDOM,3, 4);
+                    int y = RandomUtils.uniform(RANDOM,12,18);
                     int z;
                     if (i%2==RandomUtils.uniform(RANDOM,2)){
                         z = x;
