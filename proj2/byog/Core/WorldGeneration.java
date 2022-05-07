@@ -12,7 +12,7 @@ import byog.TileEngine.Tileset;
 public class WorldGeneration {
     public static long SEED;
     public static Random RANDOM;
-    public static int MaxRecursionDepth = 10;
+    public static int MaxRecursionDepth = 9;
     public static Pos keyPos;
     public static Pos doorPos;
     public static Pos playerPos;
@@ -82,7 +82,7 @@ public class WorldGeneration {
                             door_x = RandomUtils.uniform(RANDOM,
                                     corners[0].x + 1, corners[1].x);
                             door_y = corners[0].y;
-                            posOfDoor = new Pos(door_x, door_y);
+                            posOfDoor = new Pos(corners[0].x + 1, door_y);
                             doors[i] = posOfDoor;
                             break;
                         // up
@@ -90,7 +90,7 @@ public class WorldGeneration {
                             door_x = RandomUtils.uniform(RANDOM,
                                     corners[3].x + 1, corners[2].x);
                             door_y = corners[3].y;
-                            posOfDoor = new Pos(door_x, door_y);
+                            posOfDoor = new Pos(corners[2].x - 1, door_y);
                             doors[i] = posOfDoor;
                             break;
 
@@ -99,7 +99,7 @@ public class WorldGeneration {
                             door_x = corners[0].x;
                             door_y = RandomUtils.uniform(RANDOM,
                                     corners[0].y + 1, corners[3].y);
-                            posOfDoor = new Pos(door_x, door_y);
+                            posOfDoor = new Pos(door_x, corners[0].y + 1);
                             doors[i] = posOfDoor;
                             break;
 
@@ -108,7 +108,7 @@ public class WorldGeneration {
                             door_x = corners[1].x;
                             door_y = RandomUtils.uniform(RANDOM,
                                     corners[1].y + 1, corners[2].y);
-                            posOfDoor = new Pos(door_x, door_y);
+                            posOfDoor = new Pos(door_x, corners[1].y + 1);
                             doors[i] = posOfDoor;
                             break;
 
@@ -217,6 +217,8 @@ public class WorldGeneration {
             if (room.doors[i] != null) {
                 int x = room.doors[i].x;
                 int y = room.doors[i].y;
+                System.out.println(x);
+                System.out.println(y);
                 if (world[x][y] == Tileset.WALL){
                     world[x][y] = Tileset.FLOOR;
                 }
@@ -235,8 +237,9 @@ public class WorldGeneration {
     //todo 记住上一步从哪个方向过来的 不要往回生成方块
     public static int drawAllRoomsRecursion(TETile[][] world,Room room,int cnt, Random RANDOM){
         int a = 0;
-        if(cnt < RandomUtils.uniform(RANDOM,0, MaxRecursionDepth/2)){
+        if(cnt < 1){
             drawRoom(world,room);
+            drawDoors(world,room);
             return 0;
         } else{
             drawRoom(world,room);
@@ -331,11 +334,7 @@ public class WorldGeneration {
         // Add rect
         Rectangle rec1 = new Rectangle(R1,4,5);
         Room r1 = new Room(rec1,RANDOM);
-        drawRoom(world,r1);
-        r1.genDoors(2);
-
         r1.genAllNeighbourRooms(world,RANDOM);
-        drawDoors(world,r1);
         drawAllRoomsRecursion(world, r1,MaxRecursionDepth,RANDOM);
         drawEscape(world);
         drawKey(world);
