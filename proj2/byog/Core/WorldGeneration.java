@@ -1,5 +1,6 @@
 package byog.Core;
 
+import java.util.Arrays;
 import java.util.Random;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
@@ -11,12 +12,13 @@ import byog.TileEngine.Tileset;
 public class WorldGeneration {
     public static long SEED;
     public static Random RANDOM;
-    public static int MaxRecursionDepth = 8;
+    public static int MaxRecursionDepth = 10;
     public static Pos keyPos;
     public static Pos doorPos;
     public static Pos playerPos;
     public static boolean isDoorOpened = false;
     public static boolean isKeyGot = false;
+    public static boolean reverse = false;
 
     public static class Pos{
         public int  x;
@@ -63,8 +65,10 @@ public class WorldGeneration {
             RANDOM = random;
         }
 
+
         public Pos[] genDoors(int upLimit) {
-            int numOfNeighbor = RandomUtils.uniform(RANDOM,1, upLimit);
+            int freq[] = {0,4,3,1,0};
+            int numOfNeighbor = RandomUtils.discrete(RANDOM,freq);
             Pos posOfDoor;
             int door_x;
             int door_y;
@@ -166,8 +170,18 @@ public class WorldGeneration {
             for (int i = 0; i < doors.length; i++) {
                 breakout = false;
                 if (doors[i] != null) {
-                    int x = RandomUtils.uniform(RANDOM,3, 4);
-                    int y = RandomUtils.uniform(RANDOM,10,12);
+                    int freq[] = {0,0,0,11,2,1};
+                    int freq_rev[] = {0,0,0,5,2,1};
+                    int[] freq_final = new int[6];
+                    if(reverse) {
+                        freq_final= freq;
+                        reverse = false;
+                    } else {
+                        freq_final=freq_rev;
+                        reverse = true;
+                    }
+                    int x = RandomUtils.discrete(RANDOM,freq_final);
+                    int y = RandomUtils.uniform(RANDOM,6,10);
                     int z;
                     if (i%2==RandomUtils.uniform(RANDOM,2)){
                         z = x;

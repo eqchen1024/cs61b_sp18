@@ -62,7 +62,7 @@ public class Game {
         while (true){
             if(StdDraw.hasNextKeyTyped() == true){
                 char nextCommand = StdDraw.nextKeyTyped();
-                if(!("" + nextCommand).equals(singal)){
+                if(!("" + nextCommand).equalsIgnoreCase(singal)){
                     userAnswer = userAnswer + nextCommand;
                     drawTitle(userAnswer);
                     StdDraw.show();
@@ -79,11 +79,11 @@ public class Game {
     public void showTileUnderMouse(TETile[][] world){
         int mouseX = (int) Math.floor(StdDraw.mouseX());
         int mouseY = (int) Math.floor(StdDraw.mouseY());
-        if (mouseX < WIDTH && mouseX > 0 && mouseY < HEIGHT - 1 && mouseY > 0 && (mouseXLag1 != mouseX
+        if (mouseX < WIDTH && mouseX > 0 && mouseY < HEIGHT  && mouseY > 0 && (mouseXLag1 != mouseX
                 || mouseYLag1 !=mouseY))  {
             ter.renderFrame(world);
             StdDraw.setPenColor(StdDraw.WHITE);
-            StdDraw.text(Game.WIDTH * 0.1, Game.HEIGHT * 0.95,  world[mouseX][mouseY+1].description());
+            StdDraw.text(Game.WIDTH * 0.1, Game.HEIGHT * 0.95,  world[mouseX][mouseY].description());
             StdDraw.show();
             mouseXLag1 = mouseX;
             mouseYLag1 = mouseY;
