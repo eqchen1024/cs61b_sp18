@@ -5,6 +5,8 @@ import byog.TileEngine.TETile;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
@@ -89,7 +91,34 @@ public class Game {
 
     }
 
-    public void save(TETile[][] world){
+    public void save(){
+        try {
+            System.out.println("Start Saving");
+            FileWriter writer = new FileWriter("./byog/Core/worldStatus.txt", false);
+            writer.write(Long.toString(WorldGeneration.SEED));
+            writer.write("\t");
+            writer.write(Long.toString(WorldGeneration.keyPos.x));
+            writer.write("\t");
+            writer.write(Long.toString(WorldGeneration.keyPos.y));
+            writer.write("\t");
+            writer.write(Long.toString(WorldGeneration.doorPos.x));
+            writer.write("\t");
+            writer.write(Long.toString(WorldGeneration.doorPos.y));
+            writer.write("\t");
+            writer.write(Long.toString(WorldGeneration.playerPos.x));
+            writer.write("\t");
+            writer.write(Long.toString(WorldGeneration.playerPos.y));
+            writer.write("\t");
+            writer.write(Boolean.toString(WorldGeneration.isDoorOpened));
+            writer.write("\t");
+            writer.write(Boolean.toString(WorldGeneration.isKeyGot));
+            writer.write("\t");
+            writer.close();
+            System.exit(0);
+            System.out.println("Saved Successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -105,9 +134,9 @@ public class Game {
                 if(StdDraw.hasNextKeyTyped()){
                     moveCmd = moveCmd + StdDraw.nextKeyTyped();
                     if (moveCmd.equals(":")){
-                        StdDraw.pause(5000);
+                        StdDraw.pause(2000);
                         if (StdDraw.nextKeyTyped()=='q'){
-                            save(world);
+                            save();
                         }
                     } else {
                         p1.move(world,moveCmd);
