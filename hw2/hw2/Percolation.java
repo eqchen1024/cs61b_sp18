@@ -15,8 +15,8 @@ public class Percolation {
         sideLength = N;
         joinStatusSet =  new WeightedQuickUnionUF(sideLength * sideLength + 2);
         openStatusArray = new int[sideLength * sideLength + 2];
+        openStatusArray[sideLength * sideLength] = 1;
         openStatusArray[sideLength * sideLength + 1] = 1;
-        openStatusArray[sideLength * sideLength + 2] = 1;
     }
     // open the site (row, col) if it is not open already
     public void open(int row, int col) {
@@ -48,10 +48,10 @@ public class Percolation {
             neighbourIndex.add(cellIndex + 1);
         }
         if (row == 0) {
-            neighbourIndex.add(sideLength * sideLength + 1);
+            neighbourIndex.add(sideLength * sideLength);
         }
         if (row == sideLength - 1) {
-            neighbourIndex.add(sideLength * sideLength + 2);
+            neighbourIndex.add(sideLength * sideLength + 1);
         }
         return neighbourIndex;
     }
@@ -70,7 +70,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         boolean full_flag = false;
         int cellIndex = sideLength * row + col;
-        if (joinStatusSet.connected(sideLength * sideLength + 1,cellIndex) && isOpen(row,col)) {
+        if (joinStatusSet.connected(sideLength * sideLength,cellIndex) && isOpen(row,col)) {
             full_flag = true;
         }
         return full_flag;
@@ -84,7 +84,7 @@ public class Percolation {
     // does the system percolate?
     public boolean percolates() {
         boolean percolates_flag = false;
-        if (joinStatusSet.connected(sideLength * sideLength + 1,sideLength * sideLength + 2) ) {
+        if (joinStatusSet.connected(sideLength * sideLength,sideLength * sideLength + 1) ) {
             percolates_flag = true;
         }
 
