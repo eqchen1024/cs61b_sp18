@@ -13,8 +13,10 @@ public class Percolation {
 
     public Percolation(int N) {
         sideLength = N;
-        joinStatusSet =  new WeightedQuickUnionUF(sideLength * sideLength);
-        openStatusArray = new int[sideLength * sideLength];
+        joinStatusSet =  new WeightedQuickUnionUF(sideLength * sideLength + 2);
+        openStatusArray = new int[sideLength * sideLength + 2];
+        openStatusArray[sideLength * sideLength + 1] = 1;
+        openStatusArray[sideLength * sideLength + 2] = 1;
     }
     // open the site (row, col) if it is not open already
     public void open(int row, int col) {
@@ -27,6 +29,7 @@ public class Percolation {
                 joinStatusSet.union(neighbour, cellIndex);
             }
         }
+
     }
 
     private List<Integer> getNeighborIndex(int row, int col){
@@ -43,6 +46,12 @@ public class Percolation {
         }
         if (col != sideLength - 1) {
             neighbourIndex.add(cellIndex + 1);
+        }
+        if (row == 0) {
+            neighbourIndex.add(sideLength * sideLength + 1);
+        }
+        if (row == sideLength - 1) {
+            neighbourIndex.add(sideLength * sideLength + 2);
         }
         return neighbourIndex;
     }
@@ -61,10 +70,8 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         boolean full_flag = false;
         int cellIndex = sideLength * row + col;
-        for (int i = 0; i < sideLength; i++) {
-            if (joinStatusSet.connected(i,cellIndex) && isOpen(row,col)) {
-                full_flag = true;
-            }
+        if (joinStatusSet.connected(sideLength * sideLength + 1,cellIndex) && isOpen(row,col)) {
+            full_flag = true;
         }
         return full_flag;
     }
@@ -77,11 +84,10 @@ public class Percolation {
     // does the system percolate?
     public boolean percolates() {
         boolean percolates_flag = false;
-        for (int i = 0; i < sideLength; i++) {
-            if(isFull(sideLength - 1, i)){
-                percolates_flag = true;
-            }
+        if (joinStatusSet.connected(sideLength * sideLength + 1,sideLength * sideLength + 2) ) {
+            percolates_flag = true;
         }
+
         return percolates_flag;
     }
 
