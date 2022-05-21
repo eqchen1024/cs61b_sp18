@@ -25,7 +25,7 @@ public class PercolationStats {
                     p.open(row,col);
                 }
             }
-            threshRecords[expNum] = p.numberOfOpenSites();
+            threshRecords[expNum] = p.numberOfOpenSites()/ (sideLength * sideLength);
         }
     }
 
