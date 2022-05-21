@@ -2,15 +2,16 @@ package hw2;
 
 import java.util.Random;
 import edu.princeton.cs.introcs.StdRandom;
+import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
-    Random random = new Random();
-    Percolation p;
-    int row, col;
-    int[] threshRecords;
-    int thresh;
-    int sideLength;
-    int expTime;
+    private Random random = new Random();
+    private Percolation p;
+    private int row, col;
+    private int[] threshRecords;
+    private int thresh;
+    private int sideLength;
+    private int expTime;
     // perform T independent experiments on an N-by-N grid
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if (N <= 0 || T <= 0){
@@ -36,23 +37,25 @@ public class PercolationStats {
 
     // sample mean of percolation threshold
     public double mean() {
-        int sumOfThresh = 0;
-        for (int i =0; i < threshRecords.length; i++) {
-            sumOfThresh += threshRecords[i];
-        }
-        return sumOfThresh/expTime;
+//        int sumOfThresh = 0;
+//        for (int i =0; i < threshRecords.length; i++) {
+//            sumOfThresh += threshRecords[i];
+//        }
+//        return sumOfThresh/expTime;
+        return StdStats.mean(threshRecords);
     }
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        double totalDeviationSquare = 0;
-        double variance;
-        double meanThresh = mean();
-        for (int i =0; i < threshRecords.length; i++) {
-            totalDeviationSquare += (threshRecords[i] - meanThresh) * (threshRecords[i] - meanThresh);
-        }
-        variance = totalDeviationSquare/(expTime -1);
-        return Math.sqrt(variance);
+//        double totalDeviationSquare = 0;
+//        double variance;
+//        double meanThresh = mean();
+//        for (int i =0; i < threshRecords.length; i++) {
+//            totalDeviationSquare += (threshRecords[i] - meanThresh) * (threshRecords[i] - meanThresh);
+//        }
+//        variance = totalDeviationSquare/(expTime -1);
+//        return Math.sqrt(variance);
+        return StdStats.stddev(threshRecords);
     }
     // low endpoint of 95% confidence interval
     public double confidenceLow() {

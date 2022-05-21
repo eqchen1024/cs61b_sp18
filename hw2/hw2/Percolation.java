@@ -20,6 +20,9 @@ public class Percolation {
     }
     // open the site (row, col) if it is not open already
     public void open(int row, int col) {
+        if (row >= sideLength || row < 0 || col >= sideLength || col < 0) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
         int cellIndex = sideLength * row + col;
         openStatusArray[cellIndex] = 1;
         openCellNum += 1;
@@ -58,6 +61,9 @@ public class Percolation {
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
+        if (row >= sideLength || row < 0 || col >= sideLength || col < 0) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
         int cellIndex = sideLength * row + col;
         if (openStatusArray[cellIndex] ==1) {
             return true;
@@ -68,6 +74,9 @@ public class Percolation {
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
+        if (row >= sideLength || row < 0 || col >= sideLength || col < 0) {
+            throw new java.lang.IndexOutOfBoundsException();
+        }
         boolean full_flag = false;
         int cellIndex = sideLength * row + col;
         if (joinStatusSet.connected(sideLength * sideLength,cellIndex) && isOpen(row,col)) {
