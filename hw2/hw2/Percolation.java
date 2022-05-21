@@ -50,7 +50,7 @@ public class Percolation {
         if (row == 0) {
             joinStatusSet.union(sideLength * sideLength, cellIndex);
         }
-        if (row == sideLength - 1) {
+        if (row == sideLength - 1 && !percolates()) {
             joinStatusSet.union(sideLength * sideLength + 1, cellIndex);
         }
     }
