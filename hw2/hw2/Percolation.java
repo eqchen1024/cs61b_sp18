@@ -30,7 +30,7 @@ public class Percolation {
         }
         List<Integer> neighbours= getNeighborIndex(row, col);
         for (int neighbour: neighbours) {
-            if (openStatusArray[neighbour] == 1 && cellIndex < sideLength * (sideLength -1)) {
+            if (openStatusArray[neighbour] == 1) {
                 joinStatusSet.union(neighbour, cellIndex);
 
             }
