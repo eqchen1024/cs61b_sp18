@@ -28,38 +28,31 @@ public class Percolation {
             openStatusArray[cellIndex] = 1;
             openCellNum += 1;
         }
-        List<Integer> neighbours= getNeighborIndex(row, col);
-        for (int neighbour: neighbours) {
-            if (openStatusArray[neighbour] == 1) {
-                joinStatusSet.union(neighbour, cellIndex);
+        UnionAround(row,col);
 
-            }
-        }
 
     }
 
-    private List<Integer> getNeighborIndex(int row, int col){
+    private void UnionAround(int row, int col){
         int cellIndex = sideLength * row + col;
-        List<Integer> neighbourIndex = new ArrayList<Integer>();
-        if (row != 0) {
-            neighbourIndex.add(cellIndex - sideLength);
+        if (row != 0 && openStatusArray[cellIndex - sideLength] == 1) {
+            joinStatusSet.union(cellIndex - sideLength, cellIndex);
         }
-        if (col !=0) {
-            neighbourIndex.add(cellIndex - 1);
+        if (col !=0 && openStatusArray[cellIndex - 1] == 1) {
+            joinStatusSet.union(cellIndex - 1, cellIndex);
         }
-        if (row != sideLength - 1) {
-            neighbourIndex.add(cellIndex + sideLength);
+        if (row != sideLength - 1 && openStatusArray[cellIndex + sideLength] == 1) {
+            joinStatusSet.union(cellIndex + sideLength, cellIndex);
         }
-        if (col != sideLength - 1) {
-            neighbourIndex.add(cellIndex + 1);
+        if (col != sideLength - 1 && openStatusArray[cellIndex + 1] == 1) {
+            joinStatusSet.union(cellIndex + 1, cellIndex);
         }
         if (row == 0) {
-            neighbourIndex.add(sideLength * sideLength);
+            joinStatusSet.union(sideLength * sideLength, cellIndex);
         }
         if (row == sideLength - 1) {
-            neighbourIndex.add(sideLength * sideLength + 1);
+            joinStatusSet.union(sideLength * sideLength + 1, cellIndex);
         }
-        return neighbourIndex;
     }
 
     // is the site (row, col) open?
