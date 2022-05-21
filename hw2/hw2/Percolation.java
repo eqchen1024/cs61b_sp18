@@ -24,12 +24,15 @@ public class Percolation {
             throw new java.lang.IndexOutOfBoundsException();
         }
         int cellIndex = sideLength * row + col;
-        openStatusArray[cellIndex] = 1;
-        openCellNum += 1;
+        if (openStatusArray[cellIndex] != 1) {
+            openStatusArray[cellIndex] = 1;
+            openCellNum += 1;
+        }
         List<Integer> neighbours= getNeighborIndex(row, col);
         for (int neighbour: neighbours) {
-            if (openStatusArray[neighbour] == 1) {
+            if (openStatusArray[neighbour] == 1 && cellIndex < sideLength * (sideLength -1)) {
                 joinStatusSet.union(neighbour, cellIndex);
+
             }
         }
 
