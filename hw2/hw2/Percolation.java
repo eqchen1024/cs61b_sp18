@@ -2,18 +2,18 @@ package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Percolation {
     private int sideLength;
-    private WeightedQuickUnionUF joinStatusSet;
+    private WeightedQuickUnionUF fullStatusSet;
+    private WeightedQuickUnionUF percolateStatusSet;
     private int[] openStatusArray;
     private int openCellNum = 0;
 
     public Percolation(int N) {
         sideLength = N;
-        joinStatusSet =  new WeightedQuickUnionUF(sideLength * sideLength + 2);
+        percolateStatusSet =  new WeightedQuickUnionUF(sideLength * sideLength + 2);
+        fullStatusSet =  new WeightedQuickUnionUF(sideLength * sideLength + 2);
         openStatusArray = new int[sideLength * sideLength + 2];
         openStatusArray[sideLength * sideLength] = 1;
         openStatusArray[sideLength * sideLength + 1] = 1;
@@ -36,22 +36,30 @@ public class Percolation {
     private void UnionAround(int row, int col){
         int cellIndex = sideLength * row + col;
         if (row != 0 && openStatusArray[cellIndex - sideLength] == 1) {
-            joinStatusSet.union(cellIndex - sideLength, cellIndex);
+            percolateStatusSet.union(cellIndex - sideLength, cellIndex);
+            fullStatusSet.union(cellIndex - sideLength, cellIndex);
         }
         if (col !=0 && openStatusArray[cellIndex - 1] == 1) {
-            joinStatusSet.union(cellIndex - 1, cellIndex);
+            percolateStatusSet.union(cellIndex - 1, cellIndex);
+            fullStatusSet.union(cellIndex - 1, cellIndex);
         }
         if (row != sideLength - 1 && openStatusArray[cellIndex + sideLength] == 1) {
-            joinStatusSet.union(cellIndex + sideLength, cellIndex);
+            percolateStatusSet.union(cellIndex + sideLength, cellIndex);
+            fullStatusSet.union(cellIndex + sideLength, cellIndex);
         }
         if (col != sideLength - 1 && openStatusArray[cellIndex + 1] == 1) {
-            joinStatusSet.union(cellIndex + 1, cellIndex);
+            percolateStatusSet.union(cellIndex + 1, cellIndex);
+            fullStatusSet.union(cellIndex + 1, cellIndex);
         }
         if (row == 0) {
-            joinStatusSet.union(sideLength * sideLength, cellIndex);
+            percolateStatusSet.union(sideLength * sideLength, cellIndex);
+            fullStatusSet.union(sideLength * sideLength, cellIndex);
         }
         if (row == sideLength - 1 && !percolates()) {
-            joinStatusSet.union(sideLength * sideLength + 1, cellIndex);
+            percolateStatusSet.union(sideLength * sideLength + 1, cellIndex);
+            // 防止 backwash 的方法 把 isfull 的判断 和 percolates的判断解耦开来
+            // 由于 backwash 是连接下方虚拟节点导致的，那么在判断isfull的时候就不要链接虚拟节点
+            // 在percolates 的时候链接
         }
     }
 
@@ -75,7 +83,7 @@ public class Percolation {
         }
         boolean full_flag = false;
         int cellIndex = sideLength * row + col;
-        if (joinStatusSet.connected(sideLength * sideLength,cellIndex) && isOpen(row,col)) {
+        if (fullStatusSet.connected(sideLength * sideLength,cellIndex) && isOpen(row,col)) {
             full_flag = true;
         }
         return full_flag;
@@ -89,7 +97,7 @@ public class Percolation {
     // does the system percolate?
     public boolean percolates() {
         boolean percolates_flag = false;
-        if (joinStatusSet.connected(sideLength * sideLength,sideLength * sideLength + 1) ) {
+        if (percolateStatusSet.connected(sideLength * sideLength,sideLength * sideLength + 1) ) {
             percolates_flag = true;
         }
 
