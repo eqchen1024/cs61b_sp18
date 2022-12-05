@@ -1,7 +1,7 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import edu.princeton.cs.algs4.MinPQ;
 
 /**
  * This class provides a shortestPath method for finding routes between two points
@@ -25,7 +25,67 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+
+        GraphDB.Node startNode = g.getNode(g.closest(stlon,stlat));
+        GraphDB.Node endNode = g.getNode(g.closest(destlon,destlat));
+        List<Long> path= aStar(g,startNode,endNode);
+        return path;
+
+    }
+
+    static class SearchNode implements Comparable<SearchNode>{
+        public GraphDB.Node node;
+        public SearchNode prev;
+        public double priority = Double.MAX_VALUE;
+        public SearchNode (GraphDB.Node nd,SearchNode p) {
+            node = nd;
+            prev = p;
+        }
+        @Override
+        public int compareTo(SearchNode o) {
+            return (int) Math.signum(this.priority - o.priority);
+        }
+    }
+
+    public static List<Long> aStar(GraphDB g, GraphDB.Node startNode,GraphDB.Node endNode) {
+        MinPQ<SearchNode> pq = new MinPQ<>();
+        List<Long> path = new LinkedList<>();
+        Set<Long> markedIds = new HashSet<>();
+        Map<Long,Double> best = new HashMap<>();
+        SearchNode startSearchNode = new SearchNode(startNode, null);
+        pq.insert(startSearchNode);
+        best.put(startNode.id, 0.0);
+        while (!pq.isEmpty()) {
+            SearchNode curSearchNode = pq.delMin();
+            GraphDB.Node curNode = curSearchNode.node;
+            if (markedIds.contains(curNode.id)) {
+                continue;
+            }
+            if (curNode.id == endNode.id) {
+                List<Long> tmp_path = new ArrayList<>();
+                tmp_path.add(endNode.id);
+                SearchNode outPutNode = curSearchNode;
+                while (outPutNode.prev != null) {
+                    tmp_path.add(outPutNode.prev.node.id);
+                    outPutNode = outPutNode.prev;
+                }
+                for (int i = tmp_path.size() - 1 ; i >= 0; i--){
+                    path.add(tmp_path.get(i));
+                }
+                break;
+            }
+            markedIds.add(curNode.id);
+            for (Long nodeID : g.adjacent(curNode.id)) {
+                GraphDB.Node nd = g.getNode(nodeID);
+                if (!best.containsKey(nodeID) || best.get(nodeID) > best.get(curNode.id) + g.distance(curNode.id, nodeID) ) {
+                    SearchNode nodeToInsert = new SearchNode(nd,curSearchNode);
+                    best.put(nodeID,best.get(curNode.id) + g.distance(curNode.id, nodeID));
+                    nodeToInsert.priority = best.get(curNode.id) + g.distance(curNode.id, nodeID) + g.distance(nodeID,endNode.id);
+                    pq.insert(nodeToInsert);
+                }
+            }
+        }
+        return path;
     }
 
     /**
@@ -37,9 +97,98 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        List<NavigationDirection> NaviList = new LinkedList<>();
+        // need 3 pointer to assert whether we are now on a new road.
+        Long curPointer = -1l;
+        Long prevPointer = -1l;
+        Long prevPrevPointer = -1l;
+        NavigationDirection tempND = new NavigationDirection();
+        for (Long curId : route) {
+            // move pointers forward
+            prevPrevPointer = prevPointer;
+            prevPointer = curPointer;
+            curPointer = curId;
+            if (prevPrevPointer == -1l) {
+                tempND.distance = 0;
+                tempND.direction = NavigationDirection.START;
+                if (prevPointer != -1l) {
+                    // move on the first road
+                    tempND.distance += g.distance(prevPointer,curPointer);
+                    // the start point might be an intersection !
+                    tempND.way = g.getWay(commonElement(g.getNode(curPointer).ways,
+                            g.getNode(prevPointer).ways)).tags.get("name");
+                }
+                continue;
+            }
+
+            // each 2 pointers use to determine which road,these 2 pointers are on.
+            // compare 2 pairs of pointers to see where we have changed to a new road.
+            Long curWay = commonElement(g.getNode(curPointer).ways,g.getNode(prevPointer).ways);
+            Long prevWay = commonElement(g.getNode(prevPointer).ways,g.getNode(prevPrevPointer).ways);
+
+            if (g.getWay(curWay).tags.get("name").equals(g.getWay(prevWay).tags.get("name"))) {
+                tempND.distance += g.distance(prevPointer,curPointer);
+                tempND.way = g.getWay(curWay).tags.get("name");
+            } else {
+                NaviList.add(tempND);
+                tempND = new NavigationDirection();
+                tempND.distance = g.distance(prevPointer,curPointer);
+                tempND.way = g.getWay(curWay).tags.get("name");
+                // use relative bearing
+                tempND.direction = bearingToDirection(relBearingAdjust(g.bearing(prevPointer,curPointer)
+                        ,g.bearing(prevPrevPointer,prevPointer)));
+            }
+        }
+        NaviList.add(tempND);
+        return NaviList;
     }
 
+    public static double relBearingAdjust(Double b1, Double b2) {
+        double diff = b1 - b2;
+        // may over range
+        if (diff < -180) {
+            return diff +360;
+        }
+        if (diff > 180) {
+            return diff - 360;
+        }
+        return diff;
+    }
+
+    // calculate the road which the 2 nodes are on 
+    public static Long commonElement(Set<Long> s1, Set<Long> s2) {
+        Long res = -1L;
+        for (Long id : s1) {
+            if (s2.contains(id)) {
+                res =id;
+                break;
+            }
+        }
+        return res;
+    }
+
+    public static int bearingToDirection(double bearing) {
+        if (Math.abs(bearing) <= 15) {
+            return NavigationDirection.STRAIGHT;
+        }
+        if (Math.abs(bearing) <= 30 && bearing < 0) {
+            return NavigationDirection.SLIGHT_LEFT;
+        }
+        if (Math.abs(bearing) <= 30 && bearing > 0) {
+            return NavigationDirection.SLIGHT_RIGHT;
+        }
+        if (Math.abs(bearing) <= 100 && bearing < 0) {
+            return NavigationDirection.LEFT;
+        }
+        if (Math.abs(bearing) <= 100 && bearing > 0) {
+            return NavigationDirection.RIGHT;
+        }
+        if (Math.abs(bearing) > 100 && bearing < 0) {
+            return NavigationDirection.SHARP_LEFT;
+        }
+        return NavigationDirection.SHARP_RIGHT;
+
+    }
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:

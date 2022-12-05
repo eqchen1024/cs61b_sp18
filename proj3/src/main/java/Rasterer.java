@@ -8,9 +8,9 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
-
     public Rasterer() {
-        // YOUR CODE HERE
+        boolean query_success = false;
+
     }
 
     /**
@@ -41,11 +41,84 @@ public class Rasterer {
      * "query_success" : Boolean, whether the query was able to successfully complete; don't
      *                    forget to set this to true on success! <br>
      */
+
+    public int getDepth(double userRequiredLonDPP) {
+        double accurateDepth = Math.log(
+                (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) /
+                        (MapServer.TILE_SIZE *  userRequiredLonDPP))
+                / Math.log(2);
+        int depth = Math.min((int) Math.ceil(accurateDepth),7);
+        return depth;
+    }
+
+    public double getGridWidth(int depth,double origin, double end) {
+        double gridNum = Math.pow(2, depth);
+        double scale = end - origin;
+        double gridAbsWidth = scale / gridNum;
+        return gridAbsWidth;
+    }
+    public int getPosIndex(int depth, double origin, double end, double pos) {
+        double scale = end - origin;
+        double absDiff = pos - origin;
+        double relDiff = absDiff / scale;
+        double gridNum = Math.pow(2, depth);
+        double gridRelWidth = 1 / gridNum;
+        int posIndex = (int) Math.floor(relDiff / gridRelWidth);
+        return posIndex;
+    }
+
+    public int getXIndex(int depth, double longitude) {
+        return getPosIndex(depth, MapServer.ROOT_ULLON, MapServer.ROOT_LRLON, longitude);
+    }
+
+    public int getYIndex(int depth, double latitude) {
+        return getPosIndex(depth, MapServer.ROOT_ULLAT, MapServer.ROOT_LRLAT, latitude);
+    }
+
+    public double getPosByIndex(int index,double origin, double step_width){
+        return origin + index * step_width;
+    }
+
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        // 1. handle errors
+        // 2. get params
+        double queryBoxLrLon = params.get("lrlon");
+        double queryBoxUlLon = params.get("ullon");
+        double queryBoxLrLat = params.get("lrlat");
+        double queryBoxUlLat = params.get("ullat");
+        double userViewWidth= params.get("w");
+        double userViewHeight = params.get("h");
+        // 3. calculate LPP and decide depth
+        double userRequiredLonDPP = (queryBoxLrLon - queryBoxUlLon) / userViewWidth;
+        int depth = getDepth(userRequiredLonDPP);
+        // 4. calculate image index
+        int leftXIndex = getXIndex(depth,queryBoxUlLon);
+        int rightXIndex = getXIndex(depth,queryBoxLrLon);
+        int upYIndex = getYIndex(depth,queryBoxUlLat);
+        int lowYIndex = getYIndex(depth,queryBoxLrLat);
+        String[][] imageList = new String[lowYIndex - upYIndex + 1][rightXIndex - leftXIndex + 1];
+        for (int j = upYIndex; j <= lowYIndex; j++) {
+            for (int i = leftXIndex; i <= rightXIndex; i++) {
+                imageList[j - upYIndex][i - leftXIndex] = String.format("d%s_x%s_y%s.png",depth,i,j);
+                System.out.println(imageList[j - upYIndex][i - leftXIndex]);
+            }
+        }
+        // 5. get pic lat long bound
+        double gridXWidth = getGridWidth(depth,MapServer.ROOT_ULLON,MapServer.ROOT_LRLON);
+        double gridYWidth = getGridWidth(depth,MapServer.ROOT_ULLAT,MapServer.ROOT_LRLAT);
+        double PicUlLon = getPosByIndex(leftXIndex,MapServer.ROOT_ULLON,gridXWidth);
+        double PicLrLon = getPosByIndex(rightXIndex + 1,MapServer.ROOT_ULLON,gridXWidth); // + 1 for right bound
+        double PicUlLat = getPosByIndex(upYIndex,MapServer.ROOT_ULLAT,gridYWidth);
+        double PicLrLat = getPosByIndex(lowYIndex + 1,MapServer.ROOT_ULLAT,gridYWidth);
+
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+        results.put("render_grid",imageList);
+        results.put("depth",depth);
+        results.put("raster_ul_lon",PicUlLon);
+        results.put("raster_lr_lon",PicLrLon);
+        results.put("raster_ul_lat",PicUlLat);
+        results.put("raster_lr_lat",PicLrLat);
+        results.put("query_success",true);
         return results;
     }
 

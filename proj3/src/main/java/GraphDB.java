@@ -1,3 +1,4 @@
+import example.CSCourseDB;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -6,7 +7,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
+    public Map<Long, Node> nodes = new HashMap<>();
+    public Map<Long,Way> ways = new HashMap<>();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -58,6 +61,16 @@ public class GraphDB {
      */
     private void clean() {
         // TODO: Your code here.
+        List<Long>id2Remove = new ArrayList<>();
+        for (Long id : vertices()) {
+            Node nd = getNode(id);
+            if (nd.neighbours.size() == 0) {
+                id2Remove.add(id);
+            }
+        }
+        for (Long item : id2Remove) {
+            nodes.remove(item);
+        }
     }
 
     /**
@@ -65,8 +78,7 @@ public class GraphDB {
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
     /**
@@ -75,7 +87,11 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        List<Long> neighbourIds = new ArrayList<>();
+        for (Node nd : getNode(v).neighbours) {
+            neighbourIds.add(nd.id);
+        }
+        return neighbourIds;
     }
 
     /**
@@ -136,7 +152,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        double minDistance = Double.MAX_VALUE;
+        long minId = 0;
+        for (long id : vertices()) {
+            double gcDistance = distance(lon,lat,getNode(id).lon,getNode(id).lat);
+            if (gcDistance <= minDistance) {
+                minDistance = gcDistance;
+                minId = id;
+            }
+        }
+        return minId;
     }
 
     /**
@@ -145,7 +170,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return getNode(v).lon;
     }
 
     /**
@@ -154,6 +179,53 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return getNode(v).lat;
     }
+
+    public void addNode(Node nd) {
+        this.nodes.put(nd.id,nd);
+    }
+
+    public Node getNode(Long id) {
+        Node nd = nodes.get(id);
+        return  nd;
+    }
+    public Way getWay(Long id) {
+        Way way = ways.get(id);
+        return  way;
+    }
+
+
+    static class Node {
+        Long id;
+        double lat;
+        double lon;
+        Set<Node> neighbours;
+        Map<String, String> tags;
+        Set<Long> ways;
+
+        Node(Long id, double lat, double lon) {
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+            this.neighbours = new HashSet<>();
+            this.tags = new HashMap<>();
+            this.ways = new HashSet<>();
+        }
+
+    }
+    static class Way {
+        Long id;
+        List<Node> nodes;
+        Map<String, String> tags;
+        Way(Long id) {
+            this.id = id;
+            this.nodes = new LinkedList<>();
+            this.tags = new HashMap<>();
+            this.tags.put("name", "");
+        }
+    }
+
 }
+
+
