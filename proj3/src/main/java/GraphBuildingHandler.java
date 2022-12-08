@@ -41,7 +41,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private GraphDB.Way lastWay;
     private boolean validWayFlag = false;
     private List<String> tempPath = new LinkedList<>();
-
+    private static String validKeys = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
     /**
      * Create a new GraphBuildingHandler.
      * @param g The graph to populate with the XML data.
@@ -78,6 +78,7 @@ public class GraphBuildingHandler extends DefaultHandler {
                     Double.parseDouble(attributes.getValue("lon")));
 
             g.addNode(nd);
+            g.addPoi(nd);
             lastNode = nd;
             /* Hint: A graph-like structure would be nice. */
 
@@ -126,7 +127,28 @@ public class GraphBuildingHandler extends DefaultHandler {
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
             /* TODO Create a location. */
-            lastNode.tags.put(attributes.getValue("k"), attributes.getValue("v"));
+            List<String> ids = new LinkedList<String>();
+            List<String> names = new LinkedList<String>();
+            Map<String,List<String>> entry = new HashMap<>();
+            String name = cleanString(attributes.getValue("v"));
+            Map<String,List<String>> preMap = g.tireTree.get(cleanString(name));
+            if (preMap == null) {
+                ids.add(String.valueOf(lastNode.id));
+                names.add(name);
+            } else {
+                if(preMap.get("ids") != null) {
+                    ids = preMap.get("ids");
+                    ids.add(String.valueOf(lastNode.id));
+                    names.add(name);
+                } else {
+                    ids.add(String.valueOf(lastNode.id));
+                    names.add(name);
+                }
+            }
+            entry.put("id",ids);
+            entry.put("name",names);
+            lastNode.tags.put(attributes.getValue("k"), name);
+            g.tireTree.put(cleanString(name).toLowerCase(Locale.ROOT),entry);
             /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
@@ -173,5 +195,22 @@ public class GraphBuildingHandler extends DefaultHandler {
     }
 
 
+    public static Set<Character> getValidList(String str) {
+        Set<Character> res = new HashSet<>();
+        for (char i :str.toCharArray()){
+            res.add(i);
+        }
+        return res;
+    }
 
+    public static String cleanString(String str) {
+        Set<Character> validList = getValidList(validKeys);
+        String res = "";
+        for (int i = 0; i < str.length(); i++) {
+            if (validList.contains(str.charAt(i))) {
+                res += str.charAt(i);
+            }
+        }
+        return res;
+    }
 }

@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.util.*;
+import edu.princeton.cs.algs4.TrieST;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -22,8 +23,9 @@ public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
     public Map<Long, Node> nodes = new HashMap<>();
+    public Map<Long, Node> poi = new HashMap<>();
     public Map<Long,Way> ways = new HashMap<>();
-
+    public TrieST<Map<String,List<String>>> tireTree = new TrieST<>();
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
@@ -186,10 +188,20 @@ public class GraphDB {
         this.nodes.put(nd.id,nd);
     }
 
+    public void addPoi(Node nd) {
+        this.poi.put(nd.id,nd);
+    }
+
     public Node getNode(Long id) {
         Node nd = nodes.get(id);
         return  nd;
     }
+
+    public Node getPoi(Long id) {
+        Node nd = poi.get(id);
+        return  nd;
+    }
+
     public Way getWay(Long id) {
         Way way = ways.get(id);
         return  way;

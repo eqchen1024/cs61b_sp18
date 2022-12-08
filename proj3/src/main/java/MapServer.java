@@ -4,16 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
-
 
 /* Maven is used to pull in these dependencies. */
 import com.google.gson.Gson;
@@ -285,7 +279,12 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return new LinkedList<>();
+        List<String> res = new LinkedList<>();
+        Iterable<String> keys = graph.tireTree.keysWithPrefix(GraphBuildingHandler.cleanString(prefix).toLowerCase(Locale.ROOT));
+        for (String key :keys) {
+            res.add(graph.tireTree.get(key).get("name").get(0));
+        }
+        return res;
     }
 
     /**
@@ -301,7 +300,22 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        return new LinkedList<>();
+        List<Map<String,Object>> res = new LinkedList<>();
+        Map<String,Object> entry = new HashMap<>();
+        String query = GraphBuildingHandler.cleanString(locationName).toLowerCase(Locale.ROOT);
+        List<String> ids = graph.tireTree.get(query).get("id");
+        System.out.println(graph.tireTree.get(query) );
+        for (String i : ids) {
+            GraphDB.Node nd =  graph.getPoi(Long.parseLong(i));
+            entry.put("lat", nd.lat);
+            entry.put("lon", nd.lon);
+            entry.put("id", nd.id);
+            entry.put("name", nd.tags.get("name"));
+            res.add(entry);
+        }
+
+
+        return res;
     }
 
     /**

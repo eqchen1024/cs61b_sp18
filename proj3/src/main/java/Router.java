@@ -155,7 +155,7 @@ public class Router {
         return diff;
     }
 
-    // calculate the road which the 2 nodes are on 
+    // calculate the road which the 2 nodes are on
     public static Long commonElement(Set<Long> s1, Set<Long> s2) {
         Long res = -1L;
         for (Long id : s1) {
