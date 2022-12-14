@@ -48,12 +48,73 @@ public class QuickSort {
             Queue<Item> unsorted, Item pivot,
             Queue<Item> less, Queue<Item> equal, Queue<Item> greater) {
         // Your code here!
+        for (Item item : unsorted) {
+            if (item.compareTo(pivot) == 0){
+                equal.enqueue(item);
+                continue;
+            }
+            if (item.compareTo(pivot) < 0) {
+                less.enqueue(item);
+            } else {
+                greater.enqueue(item);
+            }
+        }
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        if (items.size() <= 1) {
+            return items;
+        }
+        Queue<Item> less = new Queue<>();
+        Queue<Item> equal = new Queue<>();
+        Queue<Item> greater = new Queue<>();
+        Item pivot = getRandomItem(items);
+        partition(items,pivot,less,equal,greater);
+        less = quickSort(less);
+        equal = quickSort(equal);
+        greater = quickSort(greater);
+        return catenate(catenate(less,equal),greater);
     }
+
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<String>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        System.out.println(students);
+        Queue<String> queue = quickSort(students);
+        System.out.println(queue);
+
+
+//        Queue<String> students = new Queue<>();
+//        students.enqueue("Alice");
+//        students.enqueue("Vanessa");
+//        students.enqueue("Ethan");
+//        students.enqueue("David");
+//        students.enqueue("Jay");
+//        students.enqueue("Harry");
+//        System.out.println("original queue: " + students);
+//        Queue<String> students2 = MergeSort.mergeSort(students);
+//        System.out.println("sorted queue: " + students2);
+//        System.out.println(students.size() == students2.size());
+//
+//        Queue<Integer> ints = new Queue<>();
+//        ints.enqueue(10);
+//        ints.enqueue(5);
+//        ints.enqueue(6);
+//        ints.enqueue(4);
+//        ints.enqueue(1);
+//        ints.enqueue(7);
+//        ints.enqueue(9);
+//        ints.enqueue(3);
+//        System.out.println("original queue: " + ints);
+//        Queue<Integer> ints2 = MergeSort.mergeSort(ints);
+//        System.out.println("sorted queue: " + ints2);
+//        System.out.println(ints.size() == ints2.size());
+   }
+
+
 }
