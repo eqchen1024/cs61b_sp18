@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 /**
  * Class for doing Radix sort
  *
@@ -17,7 +19,34 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         // TODO: Implement LSD Sort
-        return null;
+        // make a copy
+        String[] asciisCopy = new String[asciis.length];
+        // get max length
+        int maxLength = 0;
+        for (String str : asciis) {
+            if (str.length() > maxLength) {
+                maxLength = str.length();
+            }
+        }
+        // copy
+        for (int n = 0; n < asciis.length; n++) {
+            asciisCopy[n] = asciis[n];
+        }
+        // pad with placeholder
+        for (int i = 0; i < asciisCopy.length; i++) {
+            while (asciisCopy[i].length() < maxLength) {
+                asciisCopy[i] += (char) 0;
+            }
+        }
+        // sort
+        for (int digit = maxLength - 1; digit >= 0; digit--) {
+            sortHelperLSD(asciisCopy,digit);
+        }
+        // remove placeholder
+        for (int m = 0; m < asciis.length; m++) {
+            asciisCopy[m] = asciisCopy[m].replace(""+(char) 0,"");
+        }
+        return asciisCopy;
     }
 
     /**
@@ -28,7 +57,39 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        return;
+        // single step sort
+        int[] oneDigitSlice = new int[asciis.length];
+        String[] res = new String[asciis.length];
+        int[] countDict = new int[256];
+        int[] startArray = new int[256];
+        int pos = 0;
+
+        for (int i = 0; i < 256; i++) {
+            countDict[i] = 0;
+        }
+
+        for (String str : asciis) {
+            oneDigitSlice[pos] = (int) str.charAt(index);
+            pos += 1;
+        }
+
+        for (int digit : oneDigitSlice) {
+            countDict[digit] += 1;
+        }
+
+        startArray[0] = 0;
+        for (int j = 1; j < 256 ; j ++) {
+            startArray[j] = countDict[j - 1] + startArray[j - 1];
+        }
+
+        for (int k = 0; k < asciis.length; k++) {
+            res[startArray[oneDigitSlice[k]]] = asciis[k];
+            startArray[oneDigitSlice[k]] += 1;
+        }
+
+        for (int m = 0; m < asciis.length; m++) {
+            asciis[m] = res[m];
+        }
     }
 
     /**
@@ -44,5 +105,21 @@ public class RadixSort {
     private static void sortHelperMSD(String[] asciis, int start, int end, int index) {
         // Optional MSD helper method for optional MSD radix sort
         return;
+    }
+
+    public static void main(String[] args) {
+        String[] asciis = new String[] { "56", "112", "94", "4", "9", "82", "394", "80" };
+        String[] res = RadixSort.sort(asciis);
+        for (String s : res) {
+            System.out.print(s + " ");
+        }
+
+        System.out.println();
+
+        String[] asciis2 = new String[] {"  ", "      ", "    ", " "};
+        String[] res2 = RadixSort.sort(asciis2);
+        for (String s : res2) {
+            System.out.print(s + ",");
+        }
     }
 }
