@@ -30,7 +30,7 @@
  *  Total energy = 785.531820
  *
  ******************************************************************************/
-
+package hw5;
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
 

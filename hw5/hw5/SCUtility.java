@@ -6,7 +6,7 @@
  *  Some utility functions for testing SeamCarver.java.
  *
  ******************************************************************************/
-
+package hw5;
 import java.awt.Color;
 
 import edu.princeton.cs.algs4.Picture;
